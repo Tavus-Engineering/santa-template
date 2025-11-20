@@ -34,7 +34,7 @@ export const useTavusConversation = (isHairCheckComplete) => {
 
           console.log('[useTavusConversation] Making API request to Tavus...')
           const requestBody = {
-            persona_id: 'p3bb4745d4f9',
+            persona_id: 'pe6534e5245c',
             conversation_name: 'Santa Call'
           }
           console.log('[useTavusConversation] Request body:', requestBody)
