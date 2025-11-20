@@ -1,0 +1,155 @@
+.santaVideo {
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  object-fit: cover;
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 1;
+}
+
+.callingText {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Perfectly Nineties', serif;
+  font-size: clamp(32px, 5vw, 64px);
+  font-weight: 400;
+  color: #fff;
+  z-index: 5;
+  opacity: 0;
+  white-space: nowrap;
+  overflow: visible;
+  pointer-events: none;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  text-align: center;
+  width: auto;
+}
+
+.callingText.animate {
+  animation: fadeInThenPulse 0.8s ease-in-out forwards, pulse 2s ease-in-out 0.8s infinite;
+}
+
+@keyframes fadeInThenPulse {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: translateX(-50%) scale(1);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.03);
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+}
+
+.callControls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  z-index: 10;
+  pointer-events: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.unifiedButton {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid #2C2C2C;
+  cursor: pointer;
+  overflow: hidden;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  line-height: 1;
+}
+
+.buttonLeft {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 32px;
+  background: #7CFF98;
+  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: #2C2C2C;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  flex: 2;
+  transition: background-color 0.2s;
+  margin: 0;
+  border: none;
+  box-sizing: border-box;
+}
+
+.unifiedButton:hover .buttonLeft {
+  background: #35F15E;
+}
+
+.buttonDivider {
+  width: 1px;
+  background: #2C2C2C;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.buttonRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 24px;
+  background: #EAE5DE;
+  flex: 1;
+  margin: 0;
+  border: none;
+  box-sizing: border-box;
+}
+
+.answerIcon {
+  width: 12px;
+  height: 12px;
+  background: #2C2C2C;
+  display: block;
+  flex-shrink: 0;
+}
+
+.answerText {
+  font-weight: bold;
+}
+
+.phoneIcon {
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  object-fit: contain;
+  filter: grayscale(100%) brightness(0.3);
+}
+

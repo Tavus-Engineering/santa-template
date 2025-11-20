@@ -1,0 +1,30 @@
+.flappy-santa-game {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
+}
+
+.pipe {
+  box-sizing: border-box;
+}
+
+.pipe-top {
+  border-bottom: 4px solid #006400;
+}
+
+.pipe-bottom {
+  border-top: 4px solid #006400;
+}
+
+.santa-character {
+  z-index: 5;
+  pointer-events: none;
+}
+
+.santa-character svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+

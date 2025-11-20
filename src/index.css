@@ -1,0 +1,68 @@
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/Suisse Int\'l font/web files/SuisseIntl-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/Suisse Int\'l font/web files/SuisseIntl-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/Suisse Int\'l font/web files/SuisseIntl-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FK Raster Grotesk Compact';
+  src: url('/Fonts/FK Raster Grotesk Compact Family/woff2/FKRasterGroteskCompact-Blended.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/Perfectly Nineties Family Web/WOFF/PerfectlyNineties-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  font-family: 'FK Raster Grotesk Compact', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  min-width: 320px;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}

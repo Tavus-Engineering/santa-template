@@ -1,0 +1,32 @@
+.heroText {
+  position: absolute;
+  top: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  pointer-events: none;
+  width: 100%;
+  padding: 0 40px;
+}
+
+.heroTextMeet {
+  font-family: 'Perfectly Nineties', serif;
+  font-size: clamp(60px, 12vw, 180px);
+  font-weight: 400;
+  color: #333;
+  line-height: 1;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .heroTextMeet {
+    white-space: nowrap;
+    text-align: center;
+    font-size: clamp(60px, 15vw, 150px);
+  }
+}
+

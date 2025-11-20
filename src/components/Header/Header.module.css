@@ -1,0 +1,21 @@
+.header {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 30px 40px;
+  background: transparent;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.musicIcon {
+  font-size: 24px;
+  color: #EAE5DE;
+}
+
