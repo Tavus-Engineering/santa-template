@@ -1,6 +1,71 @@
+/* Suisse Intl */
 @font-face {
   font-family: 'Suisse Intl';
-  src: url('/Fonts/Suisse Int\'l font/web files/SuisseIntl-Regular.woff2') format('woff2');
+  src: url('/Fonts/suisse/SuisseIntl-Hairline.woff2') format('woff2');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-HairlineIt.woff2') format('woff2');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-Thin.woff2') format('woff2');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-ThinIt.woff2') format('woff2');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-LightIt.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-Book.woff2') format('woff2');
+  font-weight: 350;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-BookIt.woff2') format('woff2');
+  font-weight: 350;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -8,7 +73,15 @@
 
 @font-face {
   font-family: 'Suisse Intl';
-  src: url('/Fonts/Suisse Int\'l font/web files/SuisseIntl-Medium.woff2') format('woff2');
+  src: url('/Fonts/suisse/SuisseIntl-RegularIt.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -16,15 +89,149 @@
 
 @font-face {
   font-family: 'Suisse Intl';
-  src: url('/Fonts/Suisse Int\'l font/web files/SuisseIntl-Bold.woff2') format('woff2');
+  src: url('/Fonts/suisse/SuisseIntl-MediumIt.woff2') format('woff2');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-Semibold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-SemiboldIt.woff2') format('woff2');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-BoldIt.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/Fonts/suisse/SuisseIntl-BlackIt.woff2') format('woff2');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* FK Raster Grotesk Compact */
+@font-face {
   font-family: 'FK Raster Grotesk Compact';
-  src: url('/Fonts/FK Raster Grotesk Compact Family/woff2/FKRasterGroteskCompact-Blended.woff2') format('woff2');
+  src: url('/Fonts/fk_raster_grotesk_compact/woff2/FKRasterGroteskCompact-Blended.woff2') format('woff2'),
+       url('/Fonts/fk_raster_grotesk_compact/woff/FKRasterGroteskCompact-Blended.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FK Raster Grotesk Compact';
+  src: url('/Fonts/fk_raster_grotesk_compact/woff2/FKRasterGroteskCompact-Rounded.woff2') format('woff2'),
+       url('/Fonts/fk_raster_grotesk_compact/woff/FKRasterGroteskCompact-Rounded.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FK Raster Grotesk Compact';
+  src: url('/Fonts/fk_raster_grotesk_compact/woff2/FKRasterGroteskCompact-Sharp.woff2') format('woff2'),
+       url('/Fonts/fk_raster_grotesk_compact/woff/FKRasterGroteskCompact-Sharp.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FK Raster Grotesk Compact';
+  src: url('/Fonts/fk_raster_grotesk_compact/woff2/FKRasterGroteskCompact-Smooth.woff2') format('woff2'),
+       url('/Fonts/fk_raster_grotesk_compact/woff/FKRasterGroteskCompact-Smooth.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Perfectly Nineties */
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-Thin.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-ThinItalic.woff') format('woff');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-Extralight.woff') format('woff');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-ExtralightItalic.woff') format('woff');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-LightItalic.woff') format('woff');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -32,9 +239,234 @@
 
 @font-face {
   font-family: 'Perfectly Nineties';
-  src: url('/Fonts/Perfectly Nineties Family Web/WOFF/PerfectlyNineties-Regular.woff') format('woff');
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-Italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-Semibold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-SemiboldItalic.woff') format('woff');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-BoldItalic.woff') format('woff');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-Extrabold.woff') format('woff');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-ExtraboldItalic.woff') format('woff');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Perfectly Nineties';
+  src: url('/Fonts/perfectly_nineties/PerfectlyNineties-BlackItalic.woff') format('woff');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Berkeley Mono */
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-Thin.woff2') format('woff2');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-Thin-Oblique.woff2') format('woff2');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-ExtraLight.woff2') format('woff2');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-ExtraLight-Oblique.woff2') format('woff2');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-Light-Oblique.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-SemiLight.woff2') format('woff2');
+  font-weight: 350;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-SemiLight-Oblique.woff2') format('woff2');
+  font-weight: 350;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-Oblique.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-Medium-Oblique.woff2') format('woff2');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-SemiBold-Oblique.woff2') format('woff2');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-Bold-Oblique.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-ExtraBold-Oblique.woff2') format('woff2');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/Fonts/berkeley_mono/BerkeleyMono-Black-Oblique.woff2') format('woff2');
+  font-weight: 900;
+  font-style: italic;
   font-display: swap;
 }
 

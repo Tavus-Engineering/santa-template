@@ -1,100 +1,228 @@
-.container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	flex: 1;
-	gap: 6px;
-	min-width: 0;
-	justify-content: center;
-  width: 100%;
+@layer reset, layout, theme, state;
+
+@layer reset {
+  .container,
+  .container * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 }
 
-.barContainer {
-	display: flex;
-	width: 100%;
-	max-width: 400px;
-	height: 6px;
-	overflow: visible;
-	background: transparent;
-	position: relative;
-	gap: 0;
-	box-sizing: border-box;
-	flex-shrink: 0;
-	border: 1px solid #4A4A4A;
+@layer layout {
+  .container {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 0.5em 0;
+    width: 100%;
+    max-width: 40ch;
+    margin-inline: auto;
+    container-type: inline-size;
+  }
+
+  .bar {
+    grid-row: 1;
+    grid-column: 1 / -1;
+    
+    display: grid;
+    grid-template-columns: subgrid;
+    
+    height: 0.5em;
+    border: 2px solid var(--color-track);
+  }
+
+  /* Naughty side (segments 1-5): border on right edge (stable when shrinking right) */
+  .segment:nth-child(-n+5) {
+    border-inline-end: 2px solid var(--color-track);
+  }
+
+  /* Nice side (segments 6-10): border on left edge (stable when growing right) */
+  .segment:nth-child(n+6) {
+    border-inline-start: 2px solid var(--color-track);
+  }
+
+  /* Remove borders at the extreme ends and middle to avoid double borders */
+  .segment:first-child {
+    border-inline-start: none;
+  }
+  
+  .segment:last-child {
+    border-inline-end: none;
+  }
+
+  /* Remove border from 5th segment to avoid double border with 6th segment */
+  .segment:nth-child(5) {
+    border-inline-end: none;
+  }
+
+  /* Labels Row */
+  .labels {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: center;
+  }
+
+  .labels > div {
+    display: flex;
+    align-items: center;
+    gap: 1cqi;
+  }
+
+  /* Naughty Group */
+  .labels > div:nth-child(1) {
+    grid-column: 1 / 5;
+  }
+
+  /* Center Group */
+  .labels > div:nth-child(2) {
+    grid-column: 5 / 7;
+    justify-content: center;
+  }
+
+  /* Nice Group */
+  .labels > div:nth-child(3) {
+    grid-column: 7 / 11;
+    justify-content: flex-end;
+  }
+
+  .iconWrapper {
+    display: inline-block;
+    position: relative;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    flex-shrink: 0;
+  }
+
+  .labels img {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    object-fit: contain;
+    flex-shrink: 0;
+	image-rendering: crisp-edges;
+  }
+
+  /* Use mask trick for transparent SVGs to apply color */
+  .labels > div[data-very-naughty="true"] .iconWrapper::after,
+  .labels > div[data-very-nice="true"] .iconWrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+  }
+
+  .labels > div[data-very-naughty="true"] .iconWrapper::after {
+    mask-image: url(/icons/solid-mood-sad.svg);
+    -webkit-mask-image: url(/icons/solid-mood-sad.svg);
+    background-color: var(--color-naughty-start);
+  }
+
+  .labels > div[data-very-nice="true"] .iconWrapper::after {
+    mask-image: url(/icons/solid-mood-happy.svg);
+    -webkit-mask-image: url(/icons/solid-mood-happy.svg);
+    background-color: var(--color-nice-end);
+  }
+
+  .labels > div[data-very-naughty="true"] .iconWrapper img,
+  .labels > div[data-very-nice="true"] .iconWrapper img {
+    opacity: 0;
+  }
 }
 
-.segment {
-	width: calc(100% / 11);
-	height: 100%;
-	position: relative;
-	flex-shrink: 0;
-	min-width: 0;
-	border: none;
-	border-right: 1px solid #4A4A4A;
-	box-sizing: border-box;
-	background: #D3D3D3;
-}
+@layer theme {
+  .container {
+    --color-ink: hsl(0, 0%, 0%, 0.7);
+    --color-track: hsl(0, 0%, 0%);
+    --color-track-segment-hairline: hsl(0, 0%, 0%, 0.15);
+    
+    --color-naughty-start: lch(47% 89 38);
+    --color-naughty-end: lch(75% 83 73);
+    --color-nice-start: lch(97% 97 103);
+    --color-nice-end: lch(50% 67 138);
+    
+    /* Icon sizing */
+    --icon-size: 1.5em;
+  }
 
-.segment:last-child {
-	border-right: none;
-}
-
-.centerEmoji {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 20px;
-	height: 20px;
-	flex-shrink: 0;
-}
-
-.labels {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	width: 100%;
-	max-width: 400px;
-	position: relative;
-}
-
-.naughtySide,
-.niceSide {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-}
-
-.naughtyEmoji,
-.niceEmoji {
-	flex-shrink: 0;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 20px;
-	height: 20px;
-}
-
-.moodIcon {
-	width: 100%;
-	height: 100%;
-	object-fit: contain;
-	display: block;
-}
-
-.naughtyLabel,
-.niceLabel {
-	font-family: 'FK Raster Grotesk Compact', sans-serif;
-	font-size: 10px;
+  .labels {
+    font-family: 'Berkeley Mono', monospace;
 	font-weight: 500;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-	white-space: nowrap;
-	color: #4A4A4A;
-	flex-shrink: 0;
+    font-size: 0.8rem;
+	line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    color: var(--color-ink);
+  }
+
+  /* Color the text when very naughty or very nice */
+  .labels > div[data-very-naughty="true"] span {
+    color: var(--color-naughty-start);
+  }
+
+  .labels > div[data-very-nice="true"] span {
+    color: var(--color-nice-end);
+  }
+
+  /* 
+     Define gradients using modern color-mix with oklch for better interpolation.
+     10 segments: 0-4 (Naughty), 5-9 (Nice)
+  */
+  
+  /* Naughty Side (segments 1-5) */
+  .segment:nth-child(1) { --segment-color: var(--color-naughty-start); }
+  .segment:nth-child(2) { --segment-color: color-mix(in oklch, var(--color-naughty-start) 75%, var(--color-naughty-end)); }
+  .segment:nth-child(3) { --segment-color: color-mix(in oklch, var(--color-naughty-start) 50%, var(--color-naughty-end)); }
+  .segment:nth-child(4) { --segment-color: color-mix(in oklch, var(--color-naughty-start) 25%, var(--color-naughty-end)); }
+  .segment:nth-child(5) { --segment-color: var(--color-naughty-end); }
+
+  /* Nice Side (segments 6-10) */
+  .segment:nth-child(6) { --segment-color: var(--color-nice-start); }
+  .segment:nth-child(7) { --segment-color: color-mix(in oklch, var(--color-nice-start) 75%, var(--color-nice-end)); }
+  .segment:nth-child(8) { --segment-color: color-mix(in oklch, var(--color-nice-start) 50%, var(--color-nice-end)); }
+  .segment:nth-child(9) { --segment-color: color-mix(in oklch, var(--color-nice-start) 25%, var(--color-nice-end)); }
+  .segment:nth-child(10) { --segment-color: var(--color-nice-end); }
 }
 
-@media (max-width: 768px) {
-	.barContainer {
-		max-width: 100%;
-	}
+@layer state {
+  /* Active segments use the segment color */
+  .segment[data-active="true"] {
+    background-color: var(--segment-color);
+  }
+
+  /* Partial segments and segments with wiggle: use width to show only the filled portion */
+  /* Nice side (segments 6-10): show left portion by reducing width */
+  .segment[data-active="true"][data-naughty="false"][data-fill-percent]:not([data-fill-percent="1"]) {
+    width: calc(100% * (var(--fill-percent) + var(--wiggle, 0)));
+	border-inline-end: 2px solid var(--color-track-segment-hairline);
+  }
+
+  /* Naughty side (segments 1-5): show right portion by reducing width and aligning right */
+  .segment[data-active="true"][data-naughty="true"][data-fill-percent]:not([data-fill-percent="1"]):not([data-fill-percent="0"]) {
+    width: calc(100% * (var(--fill-percent) + var(--wiggle, 0)));
+    margin-inline-start: auto;
+	border-inline-start: 2px solid var(--color-track-segment-hairline);
+  }
+
+  /* Optimistic wiggle segments (fillPercent = 0) - no border, just width from wiggle */
+  .segment[data-active="true"][data-fill-percent="0"] {
+    width: calc(max(0%, 100% * var(--wiggle, 0)));
+  }
+
+  /* Optimistic wiggle for full segments (negative even scores) */
+  .segment[data-active="true"][data-naughty="true"][data-fill-percent="1"] {
+    width: calc(100% * (var(--fill-percent) + var(--wiggle, 0)));
+    margin-inline-start: auto;
+  }
+
 }

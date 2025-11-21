@@ -26,8 +26,11 @@ export const ASSET_PATHS = {
     video: '/icons/video.png',
     volume: '/icons/volume.svg',
     moodHappy: '/icons/mood-happy.svg',
+    moodHappyFill: '/icons/solid-mood-happy.svg',
     moodNeutral: '/icons/mood-neutral.svg',
-    moodSad: '/icons/mood-sad.svg'
+    moodNeutralFill: '/icons/solid-mood-neutral.svg',
+    moodSad: '/icons/mood-sad.svg',
+    moodSadFill: '/icons/solid-mood-sad.svg'
   }
 }
 
