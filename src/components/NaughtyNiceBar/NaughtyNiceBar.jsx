@@ -162,7 +162,7 @@ export const NaughtyNiceBar = ({ score = 0 }) => {
         <div>
           <img 
             src={isVeryNaughty ? "/icons/solid-mood-sad.svg" : "/icons/mood-sad.svg"} 
-            alt="" 
+            alt=""
           />
           <span>Naughty</span>
         </div>
@@ -175,7 +175,7 @@ export const NaughtyNiceBar = ({ score = 0 }) => {
           <span>Nice</span>
           <img 
             src={isVeryNice ? "/icons/solid-mood-happy.svg" : "/icons/mood-happy.svg"} 
-            alt="" 
+            alt=""
           />
         </div>
       </div>
