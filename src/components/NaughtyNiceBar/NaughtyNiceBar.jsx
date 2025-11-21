@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import styles from './NaughtyNiceBar.module.css';
 
+// Component constants
+const SEGMENT_COUNT = 10;
+const NAUGHTY_NICE_SPLIT = 5; // Segments 0-4 are naughty, 5-9 are nice
+const VERY_NAUGHTY_THRESHOLD = -6;
+const VERY_NICE_THRESHOLD = 6;
+
 // Wiggle animation constants
 const WIGGLE_CONFIG = {
   // Animation speed and wave parameters
-  animationSpeed: 35,          // Higher = faster animation
+  animationSpeed: 35,           // Higher = faster animation
   segmentOffset: 0.3,           // Phase offset between segments for wave effect
   
   // Normal partial segment wiggle (odd scores)
   normalAmplitude: 0.06,        // ±6% wiggle
   
   // Optimistic wiggle for positive even scores (shows "next" segment)
-  positiveOptimisticMin: 0.05,  // Minimum width (5%)
+  positiveOptimisticMin: 0.05,   // Minimum width (5%)
   positiveOptimisticRange: 0.15, // Range (15%), so total is 5-20%
   
   // Optimistic wiggle for negative even scores (shows slight retreat)
@@ -28,13 +34,34 @@ const noise1D = (x) => {
   );
 };
 
-export const NaughtyNiceBar = ({ score = 0 }) => {
-  // 10 segments total: 0-4 (Naughty), 5-9 (Nice)
-  const segmentCount = score / 2;
+// Helper function to calculate normalized noise (0-1 range)
+const getNormalizedNoise = (time, segmentIndex, config) => {
+  return noise1D(time * config.animationSpeed + segmentIndex * config.segmentOffset) * 0.5 + 0.5;
+};
 
-  // Thresholds for icon changes
-  const isVeryNaughty = score <= -6;
-  const isVeryNice = score >= 6;
+// Helper function to calculate wiggle value
+const calculateWiggle = (isOptimistic, score, time, segmentIndex, fillPercent) => {
+  if (isOptimistic) {
+    if (score >= 0) {
+      // Positive even or score 0: wiggle next segment at low % (towards nice)
+      const normalizedNoise = getNormalizedNoise(time, segmentIndex, WIGGLE_CONFIG);
+      return normalizedNoise * WIGGLE_CONFIG.positiveOptimisticRange + WIGGLE_CONFIG.positiveOptimisticMin;
+    } else {
+      // Negative even: wiggle between 90-100%
+      const normalizedNoise = getNormalizedNoise(time, segmentIndex, WIGGLE_CONFIG);
+      return normalizedNoise * WIGGLE_CONFIG.negativeOptimisticRange;
+    }
+  } else if (fillPercent !== 1) {
+    // Normal wiggle for partial segments
+    return noise1D(time * WIGGLE_CONFIG.animationSpeed + segmentIndex * WIGGLE_CONFIG.segmentOffset) * WIGGLE_CONFIG.normalAmplitude;
+  }
+  return 0;
+};
+
+export const NaughtyNiceBar = ({ score = 0 }) => {
+  const segmentCount = score / 2;
+  const isVeryNaughty = score <= VERY_NAUGHTY_THRESHOLD;
+  const isVeryNice = score >= VERY_NICE_THRESHOLD;
 
   // State for wiggle animation
   const [time, setTime] = useState(0);
@@ -63,9 +90,14 @@ export const NaughtyNiceBar = ({ score = 0 }) => {
   const getSegmentState = (i) => {
     const isEvenScore = score % 2 === 0;
     
+    // Special case: score 0 - optimistically wiggle towards nice (first nice segment)
+    if (score === 0 && i === NAUGHTY_NICE_SPLIT) {
+      return { active: true, fillPercent: 0, isOptimistic: true };
+    }
+    
     // Nice Side (Positive): Indices 5 to 9
     if (score > 0) {
-      const startIndex = 5;
+      const startIndex = NAUGHTY_NICE_SPLIT;
       const endIndex = startIndex + segmentCount; // e.g. 5 + 5 = 10
       
       if (i >= startIndex && i < endIndex) {
@@ -85,7 +117,7 @@ export const NaughtyNiceBar = ({ score = 0 }) => {
     
     // Naughty Side (Negative): Indices 4 down to 0
     else if (score < 0) {
-      const startIndex = 4;
+      const startIndex = NAUGHTY_NICE_SPLIT - 1;
       const absCount = Math.abs(segmentCount);
       const endIndex = startIndex - absCount; // e.g. 4 - 5 = -1
       const partialSegmentIndex = Math.ceil(endIndex);
@@ -114,33 +146,15 @@ export const NaughtyNiceBar = ({ score = 0 }) => {
       className={styles.container}
       role="meter"
       aria-valuenow={score}
-      aria-valuemin={-10}
-      aria-valuemax={10}
+      aria-valuemin={-SEGMENT_COUNT}
+      aria-valuemax={SEGMENT_COUNT}
       aria-label="Naughty or Nice Score"
     >
       <div className={styles.bar}>
-        {Array.from({ length: 10 }).map((_, i) => {
+        {Array.from({ length: SEGMENT_COUNT }).map((_, i) => {
           const { active, fillPercent, isOptimistic } = getSegmentState(i);
-          const isNaughtySide = i < 5;
-          
-          // Calculate wiggle for this segment using Perlin noise
-          let wiggle = 0;
-          
-          if (isOptimistic) {
-            // Optimistic wiggles
-            if (score > 0) {
-              // Positive even: wiggle next segment at low %
-              const normalizedNoise = noise1D(time * WIGGLE_CONFIG.animationSpeed + i * WIGGLE_CONFIG.segmentOffset) * 0.5 + 0.5; // 0-1
-              wiggle = normalizedNoise * WIGGLE_CONFIG.positiveOptimisticRange + WIGGLE_CONFIG.positiveOptimisticMin;
-            } else if (score < 0) {
-              // Negative even: wiggle between 90-100%
-              const normalizedNoise = noise1D(time * WIGGLE_CONFIG.animationSpeed + i * WIGGLE_CONFIG.segmentOffset) * 0.5 + 0.5; // 0-1
-              wiggle = normalizedNoise * WIGGLE_CONFIG.negativeOptimisticRange;
-            }
-          } else if (active && fillPercent !== 1) {
-            // Normal wiggle for partial segments
-            wiggle = noise1D(time * WIGGLE_CONFIG.animationSpeed + i * WIGGLE_CONFIG.segmentOffset) * WIGGLE_CONFIG.normalAmplitude;
-          }
+          const isNaughtySide = i < NAUGHTY_NICE_SPLIT;
+          const wiggle = calculateWiggle(isOptimistic, score, time, i, fillPercent);
           
           return (
             <div
@@ -159,24 +173,24 @@ export const NaughtyNiceBar = ({ score = 0 }) => {
       </div>
       
       <div className={styles.labels} aria-hidden="true">
-        <div>
-          <img 
-            src={isVeryNaughty ? "/icons/solid-mood-sad.svg" : "/icons/mood-sad.svg"} 
-            alt=""
-          />
+        <div data-very-naughty={isVeryNaughty}>
+          <span className={styles.iconWrapper}>
+            <img src="/icons/mood-sad.svg" alt="" />
+          </span>
           <span>Naughty</span>
         </div>
         
         <div>
-          <img src="/icons/mood-neutral.svg" alt="" />
+          <span className={styles.iconWrapper}>
+            <img src="/icons/mood-neutral.svg" alt="" />
+          </span>
         </div>
         
-        <div>
+        <div data-very-nice={isVeryNice}>
           <span>Nice</span>
-          <img 
-            src={isVeryNice ? "/icons/solid-mood-happy.svg" : "/icons/mood-happy.svg"} 
-            alt=""
-          />
+          <span className={styles.iconWrapper}>
+            <img src="/icons/mood-happy.svg" alt="" />
+          </span>
         </div>
       </div>
     </div>

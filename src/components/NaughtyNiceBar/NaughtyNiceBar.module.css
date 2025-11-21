@@ -89,12 +89,53 @@
     justify-content: flex-end;
   }
 
+  .iconWrapper {
+    display: inline-block;
+    position: relative;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    flex-shrink: 0;
+  }
+
   .labels img {
-    width: 1.5em;
-    height: 1.5em;
+    width: var(--icon-size);
+    height: var(--icon-size);
     object-fit: contain;
     flex-shrink: 0;
 	image-rendering: crisp-edges;
+  }
+
+  /* Use mask trick for transparent SVGs to apply color */
+  .labels > div[data-very-naughty="true"] .iconWrapper::after,
+  .labels > div[data-very-nice="true"] .iconWrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+  }
+
+  .labels > div[data-very-naughty="true"] .iconWrapper::after {
+    mask-image: url(/icons/solid-mood-sad.svg);
+    -webkit-mask-image: url(/icons/solid-mood-sad.svg);
+    background-color: var(--color-naughty-start);
+  }
+
+  .labels > div[data-very-nice="true"] .iconWrapper::after {
+    mask-image: url(/icons/solid-mood-happy.svg);
+    -webkit-mask-image: url(/icons/solid-mood-happy.svg);
+    background-color: var(--color-nice-end);
+  }
+
+  .labels > div[data-very-naughty="true"] .iconWrapper img,
+  .labels > div[data-very-nice="true"] .iconWrapper img {
+    opacity: 0;
   }
 }
 
@@ -108,6 +149,9 @@
     --color-naughty-end: lch(75% 83 73);
     --color-nice-start: lch(97% 97 103);
     --color-nice-end: lch(50% 67 138);
+    
+    /* Icon sizing */
+    --icon-size: 1.5em;
   }
 
   .labels {
@@ -119,6 +163,15 @@
     letter-spacing: 0.05em;
     white-space: nowrap;
     color: var(--color-ink);
+  }
+
+  /* Color the text when very naughty or very nice */
+  .labels > div[data-very-naughty="true"] span {
+    color: var(--color-naughty-start);
+  }
+
+  .labels > div[data-very-nice="true"] span {
+    color: var(--color-nice-end);
   }
 
   /* 
@@ -149,7 +202,7 @@
 
   /* Partial segments and segments with wiggle: use width to show only the filled portion */
   /* Nice side (segments 6-10): show left portion by reducing width */
-  .segment[data-active="true"][data-naughty="false"][data-fill-percent]:not([data-fill-percent="1"]):not([data-fill-percent="0"]) {
+  .segment[data-active="true"][data-naughty="false"][data-fill-percent]:not([data-fill-percent="1"]) {
     width: calc(100% * (var(--fill-percent) + var(--wiggle, 0)));
 	border-inline-end: 2px solid var(--color-track-segment-hairline);
   }
