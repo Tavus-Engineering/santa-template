@@ -269,33 +269,31 @@
 .naughtyNiceContainer {
 	display: flex;
 	width: 100%;
-	max-width: 280px;
-	height: 12px;
+	max-width: 400px;
+	height: 6px;
 	overflow: visible;
 	background: transparent;
 	position: relative;
-	gap: 2px;
+	gap: 0;
 	box-sizing: border-box;
 	flex-shrink: 0;
-	border: none;
+	border: 1px solid #4A4A4A;
 }
 
 .segment {
-	width: calc((100% - 16px) / 9);
+	width: calc(100% / 11);
 	height: 100%;
 	position: relative;
 	flex-shrink: 0;
 	min-width: 0;
-	border: 1px solid #4A4A4A;
+	border: none;
+	border-right: 1px solid #4A4A4A;
 	box-sizing: border-box;
-}
-
-.segmentNaughty {
 	background: #D3D3D3;
 }
 
-.segmentNice {
-	background: #16A34A;
+.segment:last-child {
+	border-right: none;
 }
 
 .centerEmoji {
@@ -312,7 +310,7 @@
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
-	max-width: 280px;
+	max-width: 400px;
 	position: relative;
 }
 
