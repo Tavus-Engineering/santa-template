@@ -35,11 +35,11 @@
   }
 
   .segment {
-    border-right: 1px solid var(--color-ink);
+    border-inline-end: 1px solid var(--color-ink);
   }
 
   .segment:last-child {
-    border-right: none;
+    border-inline-end: none;
   }
 
   /* Labels Row */
@@ -89,10 +89,10 @@
     --color-ink: hsl(0, 0%, 0%, 0.7);
     --color-track: hsl(0, 0%, 0%, 0.15);
     
-    --color-naughty-start: lch(46.5% 88.5 38);
-    --color-naughty-end: lch(75% 82.5 73);
+    --color-naughty-start: lch(47% 89 38);
+    --color-naughty-end: lch(75% 83 73);
     --color-nice-start: lch(97% 97 103);
-    --color-nice-end: lch(50.5% 67 138);
+    --color-nice-end: lch(50% 67 138);
   }
 
   .labels {
