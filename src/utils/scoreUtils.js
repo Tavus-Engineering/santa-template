@@ -117,10 +117,10 @@ export function storeScore(userId, contextId, score) {
  * @param {string} contextId - Context identifier
  * @param {number} scoreChange - Change in score (can be positive or negative)
  * @param {number} sessionStartScore - Score at the start of the session
+ * @param {number} currentTotal - Current total score (from state, not localStorage)
  * @returns {{totalScore: number, sessionScore: number, sessionScoreChange: number}}
  */
-export function updateScore(userId, contextId, scoreChange, sessionStartScore) {
-	const currentTotal = getStoredScore(userId, contextId);
+export function updateScore(userId, contextId, scoreChange, sessionStartScore, currentTotal = 0) {
 	const currentSessionScore = currentTotal - sessionStartScore;
 
 	// Calculate new session score
@@ -135,9 +135,6 @@ export function updateScore(userId, contextId, scoreChange, sessionStartScore) {
 
 	// Clamp to valid range
 	const clampedTotalScore = Math.max(MIN_SCORE, Math.min(MAX_SCORE, newTotalScore));
-
-	// Store the new score
-	storeScore(userId, contextId, clampedTotalScore);
 
 	return {
 		totalScore: clampedTotalScore,
@@ -160,13 +157,13 @@ export function scoreToNicePercentage(score) {
 
 /**
  * Gets the current score context string for system messages
- * @param {string} userId - User identifier
- * @param {string} contextId - Context identifier
+ * @param {string} userId - User identifier (deprecated, kept for compatibility)
+ * @param {string} contextId - Context identifier (deprecated, kept for compatibility)
+ * @param {number} currentScore - Current score from state (defaults to 0)
  * @returns {string} - Formatted score context like "<current_score>+3</current_score>"
  */
-export function getCurrentScoreContext(userId, contextId) {
-	const score = getStoredScore(userId, contextId);
-	const scoreString = score >= 0 ? `+${score}` : `${score}`;
+export function getCurrentScoreContext(userId, contextId, currentScore = 0) {
+	const scoreString = currentScore >= 0 ? `+${currentScore}` : `${currentScore}`;
 	const context = `<current_score>${scoreString}</current_score>`;
 	return context;
 }

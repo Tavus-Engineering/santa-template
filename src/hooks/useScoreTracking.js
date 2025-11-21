@@ -20,12 +20,11 @@ export function useScoreTracking(userId = DEFAULT_USER_ID, contextId = DEFAULT_C
 	const [nicePercentage, setNicePercentage] = useState(50);
 	const sessionStartScoreRef = useRef(0);
 
-	// Initialize score when component mounts
+	// Initialize score when component mounts - always start at 0
 	useEffect(() => {
-		const storedScore = getStoredScore(userId, contextId);
-		sessionStartScoreRef.current = storedScore;
-		const initialPercentage = scoreToNicePercentage(storedScore);
-		setCurrentScore(storedScore);
+		sessionStartScoreRef.current = 0;
+		const initialPercentage = scoreToNicePercentage(0);
+		setCurrentScore(0);
 		setNicePercentage(initialPercentage);
 	}, [userId, contextId]);
 
@@ -44,13 +43,13 @@ export function useScoreTracking(userId = DEFAULT_USER_ID, contextId = DEFAULT_C
 
 		// If tags were found, update the score
 		if (scoreChange !== 0) {
-			// Get current score from storage to avoid stale closure
-			const currentStoredScore = getStoredScore(userId, contextId);
+			// Use current score from state instead of localStorage
 			const result = updateScore(
 				userId,
 				contextId,
 				scoreChange,
-				sessionStartScoreRef.current
+				sessionStartScoreRef.current,
+				currentScore
 			);
 			setCurrentScore(result.totalScore);
 			const newPercentage = scoreToNicePercentage(result.totalScore);

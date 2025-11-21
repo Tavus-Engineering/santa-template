@@ -131,6 +131,7 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 	const locationContextSentRef = useRef(false);
 	const echo30sSentRef = useRef(false);
 	const echo5sSentRef = useRef(false);
+	const timeCheck60sSentRef = useRef(false);
 	const echo30sIndexRef = useRef(0);
 	const echo5sIndexRef = useRef(0);
 
@@ -146,6 +147,7 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 			// Reset echo message flags when joining
 			echo30sSentRef.current = false;
 			echo5sSentRef.current = false;
+			timeCheck60sSentRef.current = false;
 			echo30sIndexRef.current = 0;
 			echo5sIndexRef.current = 0;
 			// Reset context flags when joining
@@ -172,6 +174,29 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 			handleLeave();
 		}
 	}, [countdown, meetingState, handleLeave]);
+
+	// Send time check utterance event at 60 seconds
+	useEffect(() => {
+		if (!sendAppMessage || !conversationId || meetingState !== 'joined-meeting') {
+			return;
+		}
+
+		// Send time check utterance event at 60 seconds
+		if (countdown === 60 && !timeCheck60sSentRef.current) {
+			const timeCheckText = "<time_check>";
+			
+			sendAppMessage({
+				message_type: "conversation",
+				event_type: "conversation.respond",
+				conversation_id: conversationId,
+				properties: {
+					text: timeCheckText
+				}
+			});
+			timeCheck60sSentRef.current = true;
+			console.log('[Conversation] Time check utterance sent at 60 seconds');
+		}
+	}, [countdown, sendAppMessage, conversationId, meetingState]);
 
 	// Echo interactions at 30s and 5s
 	useEffect(() => {
@@ -259,7 +284,7 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 
 			// Send score context when replica is present (once per conversation)
 			if (eventType === 'system.replica_present' && !scoreContextSentRef.current && conversationId) {
-				const scoreContext = getCurrentScoreContext('user', 'santa-call');
+				const scoreContext = getCurrentScoreContext('user', 'santa-call', currentScore);
 
 				if (sendAppMessage) {
 					sendAppMessage({
