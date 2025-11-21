@@ -2,9 +2,7 @@ import { useState, useRef } from 'react'
 import './App.css'
 import { useAssetPreloader } from './hooks/useAssetPreloader'
 import { useTavusConversation } from './hooks/useTavusConversation'
-import { useGeoblock } from './hooks/useGeoblock'
 import { LoadingScreen } from './components/LoadingScreen/LoadingScreen'
-import { GeoblockScreen } from './components/GeoblockScreen/GeoblockScreen'
 import { Background } from './components/Background/Background'
 import { Header } from './components/Header/Header'
 import { HeroText } from './components/HeroText/HeroText'
@@ -16,7 +14,6 @@ import { ASSET_PATHS } from './utils/assetPaths'
 
 function App() {
   const isLoading = useAssetPreloader()
-  const { isBlocked, isChecking, locationData } = useGeoblock()
   const [isMinimized, setIsMinimized] = useState(false)
   const [isFlappyMinimized, setIsFlappyMinimized] = useState(true)
   const [isAnswered, setIsAnswered] = useState(false)
@@ -50,13 +47,8 @@ function App() {
   }
 
   // Show loading screen
-  if (isLoading || isChecking) {
+  if (isLoading) {
     return <LoadingScreen />
-  }
-
-  // Show geoblock screen if user is in US
-  if (isBlocked) {
-    return <GeoblockScreen />
   }
 
   return (
@@ -99,7 +91,6 @@ function App() {
         isCallEnded={isCallEnded}
         setIsCallEnded={setIsCallEnded}
         windowRef={windowRef}
-        locationData={locationData}
       />
 
       <FlappyWindow
