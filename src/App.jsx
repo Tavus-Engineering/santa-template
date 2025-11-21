@@ -22,7 +22,7 @@ function App() {
   const windowRef = useRef(null)
   const flappyWindowRef = useRef(null)
 
-  const conversationUrl = useTavusConversation(isHairCheckComplete)
+  const { conversationUrl, conversationId } = useTavusConversation(isHairCheckComplete)
 
   const handleSantaIconClick = () => {
     if (isMinimized) {
@@ -84,7 +84,8 @@ function App() {
         setIsAnswered={setIsAnswered}
         isHairCheckComplete={isHairCheckComplete}
         setIsHairCheckComplete={setIsHairCheckComplete}
-                            conversationUrl={conversationUrl}
+        conversationUrl={conversationUrl}
+        conversationId={conversationId}
         isCallEnded={isCallEnded}
         setIsCallEnded={setIsCallEnded}
         windowRef={windowRef}

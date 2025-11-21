@@ -13,6 +13,8 @@ import { useReplicaIDs } from '../../hooks/use-replica-ids';
 import { useCVICall } from '../../hooks/use-cvi-call';
 import { useLocalCamera } from '../../hooks/use-local-camera';
 import { useLocalMicrophone } from '../../hooks/use-local-microphone';
+import { useScoreTracking } from '../../../../hooks/useScoreTracking';
+import { getCurrentScoreContext } from '../../../../utils/scoreUtils';
 import { AudioWave } from '../audio-wave';
 
 import styles from './conversation.module.css';
@@ -111,23 +113,43 @@ const MainVideo = React.memo(() => {
 	);
 });
 
-export const Conversation = React.memo(({ onLeave, conversationUrl }) => {
-	const { joinCall, leaveCall } = useCVICall();
+export const Conversation = React.memo(({ onLeave, conversationUrl, conversationId }) => {
+	const { joinCall, leaveCall, onAppMessage, sendAppMessage } = useCVICall();
 	const meetingState = useMeetingState();
 	const { hasMicError, microphones, cameras, currentMic, currentCam, setMicrophone, setCamera } = useDevices();
 	const { isCamMuted, onToggleCamera } = useLocalCamera();
 	const { isMicMuted, onToggleMicrophone, localSessionId } = useLocalMicrophone();
+	const { currentScore, nicePercentage, processMessage } = useScoreTracking();
 	const [countdown, setCountdown] = useState(120); // 2 minutes = 120 seconds
-	const [naughtyNiceRatio, setNaughtyNiceRatio] = useState(20); // 20% naughty (4 segments), 80% nice (16 segments)
 	const [showMicDropdown, setShowMicDropdown] = useState(false);
 	const [showVideoDropdown, setShowVideoDropdown] = useState(false);
 	const [isToolbarVisible, setIsToolbarVisible] = useState(true);
 	const micDropdownRef = useRef(null);
 	const videoDropdownRef = useRef(null);
+	const scoreContextSentRef = useRef(false);
 
 	console.log('[Conversation] Component rendered, conversationUrl:', conversationUrl);
 	console.log('[Conversation] Meeting state:', meetingState);
 	console.log('[Conversation] Has mic error:', hasMicError);
+	console.log('[Conversation] Score state:', {
+		currentScore,
+		nicePercentage,
+		expectedNiceSegments: Math.max(0, Math.min(10, currentScore)),
+		totalSegments: 10,
+	});
+
+	// Verify score context format on mount
+	useEffect(() => {
+		const scoreContext = getCurrentScoreContext('user', 'santa-call');
+		console.log('[Conversation] 🔍 Score context verification:', {
+			scoreContext,
+			expectedFormat: '<current_score>+0</current_score>',
+			hasOpeningTag: scoreContext.includes('<current_score>'),
+			hasClosingTag: scoreContext.includes('</current_score>'),
+			formatValid: scoreContext.includes('<current_score>') && scoreContext.includes('</current_score>'),
+			currentScore,
+		});
+	}, [currentScore]);
 
 	// Track countdown timer (2 minutes)
 	useEffect(() => {
@@ -147,8 +169,157 @@ export const Conversation = React.memo(({ onLeave, conversationUrl }) => {
 		}
 	}, [meetingState]);
 
-	// Naughty/Nice bar - starts at 50/50, can be updated later based on conversation
-	// For now, it stays at 50/50
+	// Listen for Tavus CVI events to process AI responses
+	// The processMessage function extracts score tags (<+> and <->) from text
+	// and updates the score accordingly. It also returns the text with tags removed.
+	//
+	// ⚠️ CRITICAL: The LLM must be configured with a system prompt that instructs it to include
+	// <+> and <-> tags in its responses. This is typically configured in:
+	// - Tavus dashboard/persona settings
+	// - Backend conversation creation
+	// - Coda database if using that for persona config
+	//
+	// The system prompt should include instructions like:
+	// "Add <+> for positive behavior, <-> for negative behavior. Tags are invisible to users."
+	useEffect(() => {
+		if (!onAppMessage) {
+			console.log('[Conversation] onAppMessage not available, skipping Tavus CVI event listeners');
+			return;
+		}
+
+		console.log('[Conversation] Setting up Tavus CVI event listeners for score tracking');
+
+		const unsubscribe = onAppMessage((event) => {
+			// Log full event structure for debugging
+			console.log('[Conversation] 🔍 FULL EVENT:', {
+				eventType: event?.data?.event_type || 'NO_EVENT_TYPE',
+				message_type: event?.data?.message_type || 'NO_MESSAGE_TYPE',
+				role: event?.data?.properties?.role || event?.data?.role || 'NO_ROLE',
+				hasText: !!(event?.data?.text || event?.data?.utterance || event?.data?.transcript || event?.data?.content || event?.data?.properties?.text || event?.data?.properties?.speech || event?.data?.properties?.utterance),
+				text: event?.data?.text || event?.data?.utterance || event?.data?.transcript || 'NO TEXT',
+				properties: event?.data?.properties,
+				fullData: event?.data,
+			});
+
+			// Log raw event structure
+			console.log('[Conversation] 📦 RAW EVENT:', JSON.stringify(event, null, 2));
+
+			const { data } = event;
+			const eventType = data?.event_type || '';
+
+			// Check for more specific event types that might contain utterances
+			const isUtteranceEvent =
+				eventType.includes('utterance') ||
+				eventType.includes('transcript') ||
+				eventType === 'conversation.replica.utterance' ||
+				eventType === 'replica.utterance' ||
+				eventType === 'conversation.utterance';
+
+			// Send score context when replica is present (once per conversation)
+			if (eventType === 'system.replica_present' && !scoreContextSentRef.current && conversationId) {
+				const scoreContext = getCurrentScoreContext('user', 'santa-call');
+
+				// Verify score context format
+				console.log('[Conversation] 📤 Attempting to send score context:', {
+					scoreContext,
+					conversationId,
+					hasSendAppMessage: !!sendAppMessage,
+					expectedFormat: '<current_score>+0</current_score>',
+					matches: scoreContext.includes('<current_score>') && scoreContext.includes('</current_score>'),
+				});
+
+				if (sendAppMessage) {
+					sendAppMessage({
+						message_type: "conversation",
+						event_type: "conversation.respond",
+						conversation_id: conversationId,
+						properties: {
+							text: scoreContext,
+						},
+					});
+					scoreContextSentRef.current = true;
+					console.log('[Conversation] ✅ Score context sent successfully:', scoreContext);
+				} else {
+					console.error('[Conversation] ❌ sendAppMessage is not available!');
+				}
+			}
+
+			// Try different paths to get the utterance text
+			const utteranceText =
+				event?.data?.text ||
+				event?.data?.utterance ||
+				event?.data?.transcript ||
+				event?.data?.content ||
+				event?.data?.properties?.text ||
+				event?.data?.properties?.speech ||
+				event?.data?.properties?.utterance ||
+				event?.text ||
+				event?.utterance ||
+				'';
+
+			// Try different paths to get the role
+			const role =
+				event?.data?.properties?.role ||
+				event?.data?.role ||
+				event?.properties?.role ||
+				event?.role ||
+				'';
+
+			console.log('[Conversation] 📝 Extracted:', {
+				utteranceText: utteranceText ? utteranceText.substring(0, 200) : 'NO TEXT',
+				role,
+				hasTags: utteranceText ? (utteranceText.includes('<+>') || utteranceText.includes('<->')) : false,
+				isUtteranceEvent,
+				eventType,
+			});
+
+			// Only process replica (AI) utterances, not user messages
+			// Check both role and event type to catch all possible utterance events
+			if (
+				(role === 'replica' || isUtteranceEvent) &&
+				utteranceText &&
+				typeof utteranceText === 'string' &&
+				utteranceText.length > 0
+			) {
+				console.log('[Conversation] 📝 Processing replica utterance:', {
+					eventType,
+					role,
+					utteranceLength: utteranceText.length,
+					preview: utteranceText.substring(0, 200),
+					hasPlus: utteranceText.includes('<+>'),
+					hasMinus: utteranceText.includes('<->'),
+					fullText: utteranceText, // Log full text to see if tags are present
+				});
+
+				// Process message - this extracts tags, updates score, and returns clean text
+				const cleanText = processMessage(utteranceText);
+
+				// The score has been updated automatically by processMessage
+				// You can use cleanText if you need to display it somewhere
+				console.log('[Conversation] ✅ Message processed:', {
+					originalLength: utteranceText.length,
+					cleanLength: cleanText.length,
+					tagsRemoved: utteranceText.length !== cleanText.length,
+				});
+			} else {
+				console.log('[Conversation] ⏭️ Skipping event - not a replica utterance:', {
+					role,
+					hasText: !!utteranceText,
+					isUtteranceEvent,
+					eventType,
+				});
+			}
+		});
+
+		console.log('[Conversation] Tavus CVI event listeners registered');
+
+		return () => {
+			console.log('[Conversation] Cleaning up Tavus CVI event listeners');
+			if (unsubscribe) {
+				unsubscribe();
+			}
+		};
+	}, [onAppMessage, sendAppMessage, conversationId, processMessage]);
 
 	// Close dropdowns when clicking outside
 	useEffect(() => {
@@ -348,13 +519,57 @@ export const Conversation = React.memo(({ onLeave, conversationUrl }) => {
 				<div className={styles.footerControlsBottom}>
 					<div className={styles.naughtyNiceBar}>
 						<div className={styles.naughtyNiceContainer}>
-							{Array.from({ length: 9 }).map((_, i) => {
-								// First 4 segments are gray, 5th and 6th are green, last 3 are gray
-								const isNice = i >= 4 && i < 6;
+							{Array.from({ length: 10 }).map((_, i) => {
+								// Calculate segments based on score (-10 to +10)
+								// Score 0 = 0 nice segments, 0 naughty segments (neutral)
+								// Positive scores: nice segments from middle (index 5) to the right
+								// Negative scores: naughty segments from middle-1 (index 4) to the left
+								const totalSegments = 10;
+								const middlePoint = totalSegments / 2; // 5
+
+								const isNiceSegment = (i) => {
+									if (currentScore > 0) {
+										// For positive scores, light up segments from the middle (index 5) to the right
+										return i >= middlePoint && i < (middlePoint + currentScore);
+									}
+									return false;
+								};
+
+								const isNaughtySegment = (i) => {
+									if (currentScore < 0) {
+										// For negative scores, light up segments from the middle-1 (index 4) to the left
+										// Score -1: index 4
+										// Score -2: indices 4, 3
+										// Score -10: indices 4, 3, 2, 1, 0, -1, -2, -3, -4, -5 (clamped to 0-4)
+										return i < middlePoint && i >= (middlePoint + currentScore);
+									}
+									return false;
+								};
+
+								const isNice = isNiceSegment(i);
+								const isNaughty = isNaughtySegment(i);
+								
+								// Log on first render to debug
+								if (i === 0) {
+									const niceSegments = currentScore > 0 ? Math.min(5, currentScore) : 0;
+									const naughtySegments = currentScore < 0 ? Math.min(5, -currentScore) : 0;
+									console.log('[Conversation] Rendering naughty/nice bar:', {
+										currentScore,
+										niceSegments,
+										naughtySegments,
+										middlePoint,
+										segmentStates: Array.from({ length: 10 }).map((_, idx) => ({
+											index: idx,
+											isNice: isNiceSegment(idx),
+											isNaughty: isNaughtySegment(idx),
+										})),
+									});
+								}
+								
 								return (
 									<div
 										key={i}
-										className={`${styles.segment} ${isNice ? styles.segmentNice : styles.segmentNaughty}`}
+										className={`${styles.segment} ${isNice ? styles.segmentNice : isNaughty ? styles.segmentNaughty : ''}`}
 									/>
 								);
 							})}

@@ -5,11 +5,13 @@ import { useState, useEffect } from 'react'
  */
 export const useTavusConversation = (isHairCheckComplete) => {
   const [conversationUrl, setConversationUrl] = useState(null)
+  const [conversationId, setConversationId] = useState(null)
 
-  // Reset conversationUrl when isHairCheckComplete becomes false
+  // Reset conversationUrl and conversationId when isHairCheckComplete becomes false
   useEffect(() => {
     if (!isHairCheckComplete) {
       setConversationUrl(null)
+      setConversationId(null)
     }
   }, [isHairCheckComplete])
 
@@ -56,11 +58,18 @@ export const useTavusConversation = (isHairCheckComplete) => {
             const data = await response.json()
             console.log('[useTavusConversation] API Response data:', data)
             const url = data.conversation_url || data.url
+            const id = data.conversation_id || data.id
             console.log('[useTavusConversation] Setting conversation URL:', url)
+            console.log('[useTavusConversation] Setting conversation ID:', id)
             if (url) {
               setConversationUrl(url)
             } else {
               console.error('[useTavusConversation] No conversation_url in response:', data)
+            }
+            if (id) {
+              setConversationId(id)
+            } else {
+              console.warn('[useTavusConversation] No conversation_id in response:', data)
             }
           } else {
             const errorText = await response.text()
@@ -82,6 +91,6 @@ export const useTavusConversation = (isHairCheckComplete) => {
     }
   }, [isHairCheckComplete, conversationUrl])
 
-  return conversationUrl
+  return { conversationUrl, conversationId }
 }
 
