@@ -120,7 +120,7 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 	const { isCamMuted, onToggleCamera } = useLocalCamera();
 	const { isMicMuted, onToggleMicrophone, localSessionId } = useLocalMicrophone();
 	const { currentScore, nicePercentage, processMessage } = useScoreTracking();
-	const [countdown, setCountdown] = useState(120); // 2 minutes = 120 seconds
+	const [countdown, setCountdown] = useState(180); // 3 minutes = 180 seconds
 	const [showMicDropdown, setShowMicDropdown] = useState(false);
 	const [showVideoDropdown, setShowVideoDropdown] = useState(false);
 	const [isToolbarVisible, setIsToolbarVisible] = useState(true);
@@ -136,7 +136,7 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 	// Track countdown timer (2 minutes)
 	useEffect(() => {
 		if (meetingState === 'joined-meeting') {
-			setCountdown(120); // Reset to 2 minutes when joined
+			setCountdown(180); // Reset to 3 minutes when joined
 			// Reset echo message flags when joining
 			echo30sSentRef.current = false;
 			echo5sSentRef.current = false;
@@ -152,9 +152,17 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 			}, 1000);
 			return () => clearInterval(interval);
 		} else {
-			setCountdown(120);
+			setCountdown(180);
 		}
 	}, [meetingState]);
+
+	// Automatically end call when countdown reaches 0
+	useEffect(() => {
+		if (countdown === 0 && meetingState === 'joined-meeting') {
+			console.log('[Conversation] Countdown reached 0, ending call');
+			handleLeave();
+		}
+	}, [countdown, meetingState, handleLeave]);
 
 	// Echo interactions at 30s and 5s
 	useEffect(() => {
