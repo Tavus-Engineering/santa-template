@@ -13,8 +13,8 @@
   .container {
     display: grid;
     grid-template-rows: auto auto;
-    /* 11 equal columns for the segments */
-    grid-template-columns: repeat(11, 1fr);
+    /* 10 equal columns for the segments */
+    grid-template-columns: repeat(10, 1fr);
     gap: 0.5em 0;
     width: 100%;
     max-width: 40ch;
@@ -60,18 +60,18 @@
 
   /* Naughty Group */
   .labels > div:nth-child(1) {
-    grid-column: 1 / 6; /* Spans first 5 segments */
+    grid-column: 1 / 5;
   }
 
   /* Center Group */
   .labels > div:nth-child(2) {
-    grid-column: 6 / 7; /* Spans middle segment */
+    grid-column: 5 / 7;
     justify-content: center;
   }
 
   /* Nice Group */
   .labels > div:nth-child(3) {
-    grid-column: 7 / 12; /* Spans last 5 segments */
+    grid-column: 7 / 11;
     justify-content: flex-end;
   }
 
@@ -112,25 +112,22 @@
 
   /* 
      Define gradients using modern color-mix with oklch for better interpolation.
-     Referencing variables to avoid repetition.
+     10 segments: 0-4 (Naughty), 5-9 (Nice)
   */
   
-  /* Naughty Side */
+  /* Naughty Side (segments 1-5) */
   .segment:nth-child(1) { --segment-color: var(--color-naughty-start); }
   .segment:nth-child(2) { --segment-color: color-mix(in oklch, var(--color-naughty-start) 75%, var(--color-naughty-end)); }
   .segment:nth-child(3) { --segment-color: color-mix(in oklch, var(--color-naughty-start) 50%, var(--color-naughty-end)); }
   .segment:nth-child(4) { --segment-color: color-mix(in oklch, var(--color-naughty-start) 25%, var(--color-naughty-end)); }
   .segment:nth-child(5) { --segment-color: var(--color-naughty-end); }
 
-  /* Middle */
-  .segment:nth-child(6) { --segment-color: var(--color-track); }
-
-  /* Nice Side */
-  .segment:nth-child(7) { --segment-color: var(--color-nice-start); }
-  .segment:nth-child(8) { --segment-color: color-mix(in oklch, var(--color-nice-start) 75%, var(--color-nice-end)); }
-  .segment:nth-child(9) { --segment-color: color-mix(in oklch, var(--color-nice-start) 50%, var(--color-nice-end)); }
-  .segment:nth-child(10) { --segment-color: color-mix(in oklch, var(--color-nice-start) 25%, var(--color-nice-end)); }
-  .segment:nth-child(11) { --segment-color: var(--color-nice-end); }
+  /* Nice Side (segments 6-10) */
+  .segment:nth-child(6) { --segment-color: var(--color-nice-start); }
+  .segment:nth-child(7) { --segment-color: color-mix(in oklch, var(--color-nice-start) 75%, var(--color-nice-end)); }
+  .segment:nth-child(8) { --segment-color: color-mix(in oklch, var(--color-nice-start) 50%, var(--color-nice-end)); }
+  .segment:nth-child(9) { --segment-color: color-mix(in oklch, var(--color-nice-start) 25%, var(--color-nice-end)); }
+  .segment:nth-child(10) { --segment-color: var(--color-nice-end); }
 }
 
 @layer state {

@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './NaughtyNiceBar.module.css';
 
 export const NaughtyNiceBar = ({ score = 0 }) => {
-  const middleIndex = 5;
+  // 10 segments total: 0-4 (Naughty), 5-9 (Nice)
   const segmentCount = score / 2;
 
   // Thresholds for icon changes
@@ -10,15 +10,10 @@ export const NaughtyNiceBar = ({ score = 0 }) => {
   const isVeryNice = score >= 6;
 
   const getSegmentState = (i) => {
-    // Middle segment is always neutral
-    if (i === middleIndex) {
-      return { active: false, opacity: 1 };
-    }
-
-    // Nice Side (Positive)
+    // Nice Side (Positive): Indices 5 to 9
     if (score > 0) {
-      const startIndex = middleIndex + 1; // 6
-      const endIndex = startIndex + segmentCount;
+      const startIndex = 5;
+      const endIndex = startIndex + segmentCount; // e.g. 5 + 5 = 10
       
       if (i >= startIndex && i < endIndex) {
         if (i === Math.floor(endIndex)) {
@@ -28,11 +23,11 @@ export const NaughtyNiceBar = ({ score = 0 }) => {
       }
     }
     
-    // Naughty Side (Negative)
+    // Naughty Side (Negative): Indices 4 down to 0
     else if (score < 0) {
-      const startIndex = middleIndex - 1; // 4
+      const startIndex = 4;
       const absCount = Math.abs(segmentCount);
-      const endIndex = startIndex - absCount;
+      const endIndex = startIndex - absCount; // e.g. 4 - 5 = -1
       
       if (i <= startIndex && i > endIndex) {
         if (i === Math.ceil(endIndex) && endIndex % 1 !== 0) {
@@ -55,7 +50,7 @@ export const NaughtyNiceBar = ({ score = 0 }) => {
       aria-label="Naughty or Nice Score"
     >
       <div className={styles.bar}>
-        {Array.from({ length: 11 }).map((_, i) => {
+        {Array.from({ length: 10 }).map((_, i) => {
           const { active, opacity } = getSegmentState(i);
           return (
             <div
@@ -69,7 +64,6 @@ export const NaughtyNiceBar = ({ score = 0 }) => {
       </div>
       
       <div className={styles.labels} aria-hidden="true">
-        {/* Naughty Group */}
         <div>
           <img 
             src={isVeryNaughty ? "/icons/solid-mood-sad.svg" : "/icons/mood-sad.svg"} 
@@ -78,12 +72,10 @@ export const NaughtyNiceBar = ({ score = 0 }) => {
           <span>Naughty</span>
         </div>
         
-        {/* Center Group */}
         <div>
           <img src="/icons/mood-neutral.svg" alt="" />
         </div>
         
-        {/* Nice Group */}
         <div>
           <span>Nice</span>
           <img 
