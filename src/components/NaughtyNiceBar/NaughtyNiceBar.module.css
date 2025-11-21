@@ -13,7 +13,6 @@
   .container {
     display: grid;
     grid-template-rows: auto auto;
-    /* 10 equal columns for the segments */
     grid-template-columns: repeat(10, 1fr);
     gap: 0.5em 0;
     width: 100%;
@@ -23,7 +22,6 @@
   }
 
   .bar {
-    /* Span all columns */
     grid-row: 1;
     grid-column: 1 / -1;
     
