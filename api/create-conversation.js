@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     const requestBody = {
       custom_greeting: custom_greeting || '',
       enable_dynamic_greeting: true,
-      persona_id: 'pe6534e5245c',
+      persona_id: 'p5d219ef4ec5',
       replica_id: 'r69a7ee6ca38',
       conversation_name: 'Santa Call'
     }
