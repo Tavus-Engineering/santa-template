@@ -117,6 +117,7 @@ const MainVideo = React.memo(() => {
 export const Conversation = React.memo(({ onLeave, conversationUrl, conversationId, locationData = null }) => {
 	const { joinCall, leaveCall, onAppMessage, sendAppMessage } = useCVICall();
 	const meetingState = useMeetingState();
+	const hasJoinedRef = useRef(false);
 	const { hasMicError, microphones, cameras, currentMic, currentCam, setMicrophone, setCamera } = useDevices();
 	const { isCamMuted, onToggleCamera } = useLocalCamera();
 	const { isMicMuted, onToggleMicrophone, localSessionId } = useLocalMicrophone();
@@ -407,12 +408,20 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 		}
 	}, [meetingState, onLeave]);
 
-	// Initialize call when conversation is available
+	// Initialize call when conversation is available (if not already joined)
 	useEffect(() => {
-		if (conversationUrl) {
+		console.log('[Conversation] useEffect - conversationUrl:', !!conversationUrl, 'meetingState:', meetingState, 'hasJoined:', hasJoinedRef.current);
+		if (conversationUrl && !hasJoinedRef.current && meetingState !== 'joined-meeting' && meetingState !== 'joining-meeting') {
+			console.log('[Conversation] Joining call with URL:', conversationUrl, 'Meeting state:', meetingState);
 			joinCall({ url: conversationUrl });
+			hasJoinedRef.current = true;
+		} else if (meetingState === 'joined-meeting' || meetingState === 'joining-meeting') {
+			console.log('[Conversation] Already joined or joining, skipping join call. Meeting state:', meetingState);
+			hasJoinedRef.current = true;
+		} else if (!conversationUrl) {
+			console.log('[Conversation] No conversationUrl yet, waiting...');
 		}
-	}, [conversationUrl, joinCall]);
+	}, [conversationUrl, joinCall, meetingState]);
 
 	const handleVideoContainerClick = () => {
 		setIsToolbarVisible(prev => !prev);

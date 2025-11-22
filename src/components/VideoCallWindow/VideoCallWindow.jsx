@@ -111,9 +111,11 @@ export const VideoCallWindow = ({
           <div className={styles.answeredScreen}>
             {!isHairCheckComplete ? (
               <div className={styles.haircheckContainer}>
-                <HairCheck 
+                <HairCheck
                   onJoin={handleJoin}
                   onCancel={handleCancel}
+                  conversationUrl={conversationUrl}
+                  conversationId={conversationId}
                 />
               </div>
             ) : isCallEnded ? (
