@@ -15,7 +15,7 @@ import { useLocalCamera } from '../../hooks/use-local-camera';
 import { useLocalMicrophone } from '../../hooks/use-local-microphone';
 import { useScoreTracking } from '../../../../hooks/useScoreTracking';
 import { getCurrentScoreContext } from '../../../../utils/scoreUtils';
-import { getRandomGreeting } from '../../../../utils/santaGreetings';
+import { get30SecondMessages, get5SecondMessages } from '../../../../utils/santaGreetings';
 import { AudioWave } from '../audio-wave';
 import { NaughtyNiceBar } from '../../../NaughtyNiceBar/NaughtyNiceBar';
 
@@ -115,7 +115,7 @@ const MainVideo = React.memo(() => {
 	);
 });
 
-export const Conversation = React.memo(({ onLeave, conversationUrl, conversationId }) => {
+export const Conversation = React.memo(({ onLeave, conversationUrl, conversationId, selectedLanguage = 'en' }) => {
 	const { joinCall, leaveCall, onAppMessage, sendAppMessage } = useCVICall();
 	const meetingState = useMeetingState();
 	const { hasMicError, microphones, cameras, currentMic, currentCam, setMicrophone, setCamera } = useDevices();
@@ -129,7 +129,6 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 	const micDropdownRef = useRef(null);
 	const videoDropdownRef = useRef(null);
 	const scoreContextSentRef = useRef(false);
-	const greetingSentRef = useRef(false);
 	const echo30sSentRef = useRef(false);
 	const echo5sSentRef = useRef(false);
 	const timeCheck60sSentRef = useRef(false);
@@ -153,7 +152,6 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 			echo5sIndexRef.current = 0;
 			// Reset context flags when joining
 			scoreContextSentRef.current = false;
-			greetingSentRef.current = false;
 			const interval = setInterval(() => {
 				setCountdown(prev => {
 					if (prev <= 1) {
@@ -205,17 +203,8 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 			return;
 		}
 
-		const messages30s = [
-			"Almost time for me to head out, quick, what's your Christmas wish?",
-			"My sleigh leaves soon! Tell me something festive you're excited about this year.",
-			"I have to leave shortly, has this year treated you well?",
-			"I'll be on my way soon, don't forget to spread a little Christmas cheer!"
-		];
-
-		const messages5s = [
-			"I have to dash off now, take care!",
-			"Ho ho ho! I must be on my way, until next time!"
-		];
+		const messages30s = get30SecondMessages(selectedLanguage);
+		const messages5s = get5SecondMessages(selectedLanguage);
 
 		// Send echo at 30 seconds
 		if (countdown === 30 && !echo30sSentRef.current) {
@@ -252,7 +241,7 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 			// Rotate to next message for next conversation
 			echo5sIndexRef.current = (echo5sIndexRef.current + 1) % messages5s.length;
 		}
-	}, [countdown, sendAppMessage, conversationId, meetingState]);
+	}, [countdown, sendAppMessage, conversationId, meetingState, selectedLanguage]);
 
 	// Listen for Tavus CVI events to process AI responses
 	// The processMessage function extracts score tags (<+> and <->) from text
@@ -283,38 +272,6 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 				eventType === 'replica.utterance' ||
 				eventType === 'conversation.utterance';
 
-			// Send greeting when replica is present (once per conversation)
-			if (eventType === 'system.replica_present' && !greetingSentRef.current && conversationId) {
-				try {
-					const greeting = getRandomGreeting();
-
-					if (sendAppMessage) {
-						// Wait a moment for replica to be fully ready before sending greeting
-						setTimeout(() => {
-							try {
-								if (!greetingSentRef.current && sendAppMessage) {
-									sendAppMessage({
-										message_type: "conversation",
-										event_type: "conversation.respond",
-										conversation_id: conversationId,
-										properties: {
-											text: greeting,
-										},
-									});
-									greetingSentRef.current = true;
-									console.log('[Conversation] Greeting sent via respond:', greeting.substring(0, 50) + '...');
-								}
-							} catch (error) {
-								console.error('[Conversation] Error sending greeting:', error);
-							}
-						}, 1500);
-					} else {
-						console.error('[Conversation] sendAppMessage is not available!');
-					}
-				} catch (error) {
-					console.error('[Conversation] Error in greeting logic:', error);
-				}
-			}
 
 			// Send score context when replica is present (once per conversation)
 			if (eventType === 'system.replica_present' && !scoreContextSentRef.current && conversationId) {

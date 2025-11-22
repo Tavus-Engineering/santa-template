@@ -133,6 +133,7 @@ export const VideoCallWindow = ({
                       conversationUrl={conversationUrl}
                       conversationId={conversationId}
                       onLeave={handleConversationLeave}
+                      selectedLanguage={selectedLanguage}
                     />
                   </>
                 ) : (
