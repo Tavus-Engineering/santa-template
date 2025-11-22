@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState, useRef } from 'react';
+import React, { useEffect, useCallback, useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import {
 	DailyAudioTrack,
 	DailyVideo,
@@ -115,7 +115,7 @@ const MainVideo = React.memo(() => {
 	);
 });
 
-export const Conversation = React.memo(({ onLeave, conversationUrl, conversationId, selectedLanguage = 'en' }) => {
+export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, conversationId, selectedLanguage = 'en' }, ref) => {
 	const { joinCall, leaveCall, onAppMessage, sendAppMessage } = useCVICall();
 	const meetingState = useMeetingState();
 	const { hasMicError, microphones, cameras, currentMic, currentCam, setMicrophone, setCamera } = useDevices();
@@ -139,6 +139,11 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 		leaveCall();
 		onLeave();
 	}, [leaveCall, onLeave]);
+
+	// Expose leave function to parent via ref
+	useImperativeHandle(ref, () => ({
+		leave: handleLeave
+	}), [handleLeave]);
 
 	// Track countdown timer (2 minutes)
 	useEffect(() => {
@@ -543,4 +548,4 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 			</div>
 		</div>
 	);
-});
+}));

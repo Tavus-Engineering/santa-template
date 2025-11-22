@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useWindowPosition } from '../../hooks/useWindowPosition'
 import { HairCheck } from '../cvi/components/hair-check'
 import { Conversation } from '../cvi/components/conversation'
@@ -25,6 +25,7 @@ export const VideoCallWindow = ({
   onLanguageChange
 }) => {
   const [showIntroVideo, setShowIntroVideo] = useState(true)
+  const conversationRef = useRef(null)
 
   const { position, windowSize, isDragging, handleMouseDown } = useWindowPosition({
     isLoading,
@@ -65,7 +66,13 @@ export const VideoCallWindow = ({
     e.stopPropagation()
     // If call is active, end it; otherwise just minimize
     if (isAnswered && isHairCheckComplete && !isCallEnded) {
-      handleConversationLeave()
+      // Trigger the conversation to leave the call
+      if (conversationRef.current) {
+        conversationRef.current.leave()
+      } else {
+        // Fallback: just set call ended
+        handleConversationLeave()
+      }
     } else {
       setIsMinimized(true)
     }
@@ -137,6 +144,7 @@ export const VideoCallWindow = ({
                   <>
                     {console.log('[VideoCallWindow] Rendering Conversation component with URL:', conversationUrl)}
                     <Conversation 
+                      ref={conversationRef}
                       conversationUrl={conversationUrl}
                       conversationId={conversationId}
                       onLeave={handleConversationLeave}
