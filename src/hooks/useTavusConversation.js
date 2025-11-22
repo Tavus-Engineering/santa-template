@@ -24,7 +24,8 @@ export const useTavusConversation = (isAnswered, shouldPreload = false) => {
   useEffect(() => {
     // Start generating if we should preload (window visible) or if call is answered
     // Only generate once - if already generating or already have URL, skip
-    if ((shouldPreload || isAnswered) && !conversationUrl && !isGenerating) {
+    // Don't retry if there's an error (prevents infinite loops)
+    if ((shouldPreload || isAnswered) && !conversationUrl && !isGenerating && !error) {
       console.log('[useTavusConversation] Starting conversation generation (preload:', shouldPreload, 'answered:', isAnswered, ')')
       setIsGenerating(true)
       const generateConversationUrl = async () => {
@@ -74,9 +75,36 @@ export const useTavusConversation = (isAnswered, shouldPreload = false) => {
             }
             console.error('[useTavusConversation] Failed to generate conversation URL:', response.status, errorData)
             
-            // Handle 400 status code (max concurrent users)
+            // Handle 400 status code - check if it's max concurrency or another error
             if (response.status === 400) {
-              setError('maxConcurrency')
+              // Parse error details - might be a JSON string that needs parsing
+              let errorDetails = errorData.details || errorData.message || errorText || ''
+              
+              // If details is a JSON string, try to parse it
+              if (typeof errorDetails === 'string') {
+                try {
+                  const parsedDetails = JSON.parse(errorDetails)
+                  errorDetails = parsedDetails.message || parsedDetails.error || errorDetails
+                } catch {
+                  // Not JSON, use as-is
+                }
+              }
+              
+              // Check if it's a concurrency error
+              const errorDetailsStr = String(errorDetails).toLowerCase()
+              const isConcurrencyError = 
+                errorDetailsStr.includes('concurrent') ||
+                errorDetailsStr.includes('max') ||
+                errorDetailsStr.includes('limit') ||
+                errorDetailsStr.includes('capacity') ||
+                errorDetailsStr.includes('busy')
+              
+              if (isConcurrencyError) {
+                setError('maxConcurrency')
+              } else {
+                // Other 400 errors (like invalid persona_id, etc.)
+                setError('apiError')
+              }
             } else {
               setError('unknown')
             }

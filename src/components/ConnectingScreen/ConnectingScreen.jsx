@@ -6,6 +6,12 @@ export const ConnectingScreen = ({ error }) => {
     if (error === 'maxConcurrency') {
       return "Santa's busy with his elves, please try again later"
     }
+    if (error === 'apiError') {
+      return 'Unable to connect. Please try again later.'
+    }
+    if (error === 'unknown') {
+      return 'Connection error. Please try again.'
+    }
     return 'Connecting to the North Pole...'
   }
 

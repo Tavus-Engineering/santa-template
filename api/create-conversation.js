@@ -1,5 +1,3 @@
-import { checkBotId } from 'botid/server'
-
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*')
@@ -25,9 +23,23 @@ export default async function handler(req, res) {
   }
 
   // BotID verification
-  const verification = await checkBotId()
-  if (verification.isBot) {
-    return res.status(403).json({ error: 'Access denied' })
+  // Error handling ensures API continues to work even if BotID isn't configured
+  // In development, checkBotId() always returns { isBot: false } by default
+  // Use developmentOptions.bypass: 'BAD-BOT' to test bot detection locally
+  try {
+    const { checkBotId } = await import('botid/server')
+    const verification = await checkBotId({
+      // Uncomment the line below to test bot detection in development:
+      // developmentOptions: { bypass: 'BAD-BOT' }, // Options: 'HUMAN' (default) or 'BAD-BOT'
+    })
+    if (verification.isBot) {
+      return res.status(403).json({ error: 'Access denied' })
+    }
+  } catch (error) {
+    // BotID check failed - log warning but continue processing
+    // This is expected if BotID isn't configured in Vercel
+    console.warn('[create-conversation] BotID check failed, continuing without bot protection:', error.message)
+    // Continue without BotID protection if it's not properly configured
   }
 
   try {
@@ -45,8 +57,8 @@ export default async function handler(req, res) {
     const requestBody = {
       custom_greeting: custom_greeting || '',
       enable_dynamic_greeting: true,
-      persona_id: 'p3e9c9c16ddb',
-      replica_id: 'r69a7ee6ca38',
+      persona_id: 'p3bb4745d4f9',
+      replica_id: 'r3fbe3834a3e',
       conversation_name: 'Santa Call'
     }
 
