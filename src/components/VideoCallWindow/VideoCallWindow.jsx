@@ -61,6 +61,16 @@ export const VideoCallWindow = ({
     setIsCallEnded(true)
   }
 
+  const handleClose = (e) => {
+    e.stopPropagation()
+    // If call is active, end it; otherwise just minimize
+    if (isAnswered && isHairCheckComplete && !isCallEnded) {
+      handleConversationLeave()
+    } else {
+      setIsMinimized(true)
+    }
+  }
+
   if (isMinimized) {
     return null
   }
@@ -92,10 +102,7 @@ export const VideoCallWindow = ({
           <div className={styles.menuLines}></div>
           <span 
             className={styles.windowControl}
-            onClick={(e) => {
-              e.stopPropagation()
-              setIsMinimized(true)
-            }}
+            onClick={handleClose}
           >
             <span className={styles.windowControlInner}></span>
           </span>
