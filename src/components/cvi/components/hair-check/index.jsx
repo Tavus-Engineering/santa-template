@@ -267,7 +267,7 @@ export const HairCheck = memo(({ isJoinBtnLoading = false, onJoin, onCancel, con
 						) : (
 							<JoinBtn
 								loading={isJoinBtnLoading}
-								disabled={!canProceed}
+								disabled={false}
 								className={styles.buttonJoinDesktop}
 								onClick={onJoin}
 							/>

@@ -15,6 +15,7 @@ import { useLocalCamera } from '../../hooks/use-local-camera';
 import { useLocalMicrophone } from '../../hooks/use-local-microphone';
 import { useScoreTracking } from '../../../../hooks/useScoreTracking';
 import { getCurrentScoreContext } from '../../../../utils/scoreUtils';
+import { getRandomGreeting } from '../../../../utils/santaGreetings';
 import { AudioWave } from '../audio-wave';
 import { NaughtyNiceBar } from '../../../NaughtyNiceBar/NaughtyNiceBar';
 
@@ -114,10 +115,9 @@ const MainVideo = React.memo(() => {
 	);
 });
 
-export const Conversation = React.memo(({ onLeave, conversationUrl, conversationId, locationData = null }) => {
+export const Conversation = React.memo(({ onLeave, conversationUrl, conversationId }) => {
 	const { joinCall, leaveCall, onAppMessage, sendAppMessage } = useCVICall();
 	const meetingState = useMeetingState();
-	const hasJoinedRef = useRef(false);
 	const { hasMicError, microphones, cameras, currentMic, currentCam, setMicrophone, setCamera } = useDevices();
 	const { isCamMuted, onToggleCamera } = useLocalCamera();
 	const { isMicMuted, onToggleMicrophone, localSessionId } = useLocalMicrophone();
@@ -129,7 +129,7 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 	const micDropdownRef = useRef(null);
 	const videoDropdownRef = useRef(null);
 	const scoreContextSentRef = useRef(false);
-	const locationContextSentRef = useRef(false);
+	const greetingSentRef = useRef(false);
 	const echo30sSentRef = useRef(false);
 	const echo5sSentRef = useRef(false);
 	const timeCheck60sSentRef = useRef(false);
@@ -153,7 +153,7 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 			echo5sIndexRef.current = 0;
 			// Reset context flags when joining
 			scoreContextSentRef.current = false;
-			locationContextSentRef.current = false;
+			greetingSentRef.current = false;
 			const interval = setInterval(() => {
 				setCountdown(prev => {
 					if (prev <= 1) {
@@ -283,51 +283,59 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 				eventType === 'replica.utterance' ||
 				eventType === 'conversation.utterance';
 
-			// Send score context when replica is present (once per conversation)
-			if (eventType === 'system.replica_present' && !scoreContextSentRef.current && conversationId) {
-				const scoreContext = getCurrentScoreContext('user', 'santa-call', currentScore);
-
-				if (sendAppMessage) {
-					sendAppMessage({
-						message_type: "conversation",
-						event_type: "conversation.respond",
-						conversation_id: conversationId,
-						properties: {
-							text: scoreContext,
-						},
-					});
-					scoreContextSentRef.current = true;
-				} else {
-					console.error('[Conversation] sendAppMessage is not available!');
-				}
-			}
-
-			// Send location context when replica is present (once per conversation)
-			if (eventType === 'system.replica_present' && !locationContextSentRef.current && conversationId && locationData) {
+			// Send greeting when replica is present (once per conversation)
+			if (eventType === 'system.replica_present' && !greetingSentRef.current && conversationId) {
 				try {
-					const city = locationData.city || 'Unknown';
-					const region = locationData.region || 'Unknown';
-					const country = locationData.country || 'Unknown';
-					const countryCode = locationData.countryCode || 'Unknown';
-					const timezone = locationData.timezone || 'Unknown';
-					const locationContext = `User location information: The user is located in ${city}, ${region}, ${country} (${countryCode}). Timezone: ${timezone}.`;
+					const greeting = getRandomGreeting();
 
 					if (sendAppMessage) {
-						sendAppMessage({
-							message_type: "conversation",
-							event_type: "conversation.append_llm_context",
-							conversation_id: conversationId,
-							properties: {
-								context: locationContext,
-							},
-						});
-						locationContextSentRef.current = true;
-						console.log('[Conversation] Location context sent:', locationContext);
+						// Wait a moment for replica to be fully ready before sending greeting
+						setTimeout(() => {
+							try {
+								if (!greetingSentRef.current && sendAppMessage) {
+									sendAppMessage({
+										message_type: "conversation",
+										event_type: "conversation.respond",
+										conversation_id: conversationId,
+										properties: {
+											text: greeting,
+										},
+									});
+									greetingSentRef.current = true;
+									console.log('[Conversation] Greeting sent via respond:', greeting.substring(0, 50) + '...');
+								}
+							} catch (error) {
+								console.error('[Conversation] Error sending greeting:', error);
+							}
+						}, 1500);
 					} else {
 						console.error('[Conversation] sendAppMessage is not available!');
 					}
 				} catch (error) {
-					console.error('[Conversation] Error sending location context:', error);
+					console.error('[Conversation] Error in greeting logic:', error);
+				}
+			}
+
+			// Send score context when replica is present (once per conversation)
+			if (eventType === 'system.replica_present' && !scoreContextSentRef.current && conversationId) {
+				try {
+					const scoreContext = getCurrentScoreContext('user', 'santa-call', currentScore);
+
+					if (sendAppMessage) {
+						sendAppMessage({
+							message_type: "conversation",
+							event_type: "conversation.respond",
+							conversation_id: conversationId,
+							properties: {
+								text: scoreContext,
+							},
+						});
+						scoreContextSentRef.current = true;
+					} else {
+						console.error('[Conversation] sendAppMessage is not available!');
+					}
+				} catch (error) {
+					console.error('[Conversation] Error sending score context:', error);
 				}
 			}
 
@@ -370,7 +378,7 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 				unsubscribe();
 			}
 		};
-	}, [onAppMessage, sendAppMessage, conversationId, processMessage, locationData]);
+	}, [onAppMessage, sendAppMessage, conversationId, processMessage]);
 
 	// Close dropdowns when clicking outside
 	useEffect(() => {
@@ -408,20 +416,12 @@ export const Conversation = React.memo(({ onLeave, conversationUrl, conversation
 		}
 	}, [meetingState, onLeave]);
 
-	// Initialize call when conversation is available (if not already joined)
+	// Initialize call when conversation is available
 	useEffect(() => {
-		console.log('[Conversation] useEffect - conversationUrl:', !!conversationUrl, 'meetingState:', meetingState, 'hasJoined:', hasJoinedRef.current);
-		if (conversationUrl && !hasJoinedRef.current && meetingState !== 'joined-meeting' && meetingState !== 'joining-meeting') {
-			console.log('[Conversation] Joining call with URL:', conversationUrl, 'Meeting state:', meetingState);
+		if (conversationUrl) {
 			joinCall({ url: conversationUrl });
-			hasJoinedRef.current = true;
-		} else if (meetingState === 'joined-meeting' || meetingState === 'joining-meeting') {
-			console.log('[Conversation] Already joined or joining, skipping join call. Meeting state:', meetingState);
-			hasJoinedRef.current = true;
-		} else if (!conversationUrl) {
-			console.log('[Conversation] No conversationUrl yet, waiting...');
 		}
-	}, [conversationUrl, joinCall, meetingState]);
+	}, [conversationUrl, joinCall]);
 
 	const handleVideoContainerClick = () => {
 		setIsToolbarVisible(prev => !prev);
