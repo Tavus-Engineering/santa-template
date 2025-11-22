@@ -22,9 +22,8 @@ function App() {
   const windowRef = useRef(null)
   const flappyWindowRef = useRef(null)
 
-  // Preload conversation when window is visible (not minimized) to optimize join times
-  const shouldPreloadConversation = !isMinimized
-  const { conversationUrl, conversationId, error } = useTavusConversation(isAnswered, shouldPreloadConversation)
+  // Only start conversation when user clicks "Answer His Call"
+  const { conversationUrl, conversationId, error } = useTavusConversation(isAnswered, false)
 
   const handleSantaIconClick = () => {
     if (isMinimized) {
