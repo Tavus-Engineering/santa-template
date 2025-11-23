@@ -457,18 +457,20 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 		}
 	}, [meetingState, onLeave]);
 
-	// Initialize call when conversation is available AND shouldJoin is true
+	// Participant only joins when "JOIN VIDEO CALL" is pressed
+	// According to Tavus docs, replica automatically joins the Daily.co room when conversation is created
 	// Flow: 
-	// 1. Conversation is created (replica joins automatically on Tavus side)
+	// 1. Conversation is created when "answer his call" is pressed → replica joins automatically (Tavus handles this)
 	// 2. User goes through hair check
 	// 3. User clicks "JOIN VIDEO CALL" → shouldJoin becomes true
-	// 4. Participant joins the call (daily.join)
+	// 4. Participant joins the call (daily.join) - replica should already be waiting
 	// 5. We wait for system.replica_present event to confirm replica is in the call
 	// 6. Only after replica is present do we consider participant "fully joined"
 	// 7. Greeting fires when participant joins (controlled by Tavus)
 	useEffect(() => {
 		if (conversationUrl && shouldJoin && !hasJoinedRef.current) {
 			console.log('[Conversation] Joining call - user clicked JOIN VIDEO CALL button');
+			console.log('[Conversation] Replica should already be in the room (joined when conversation was created)');
 			joinCall({ url: conversationUrl });
 			hasJoinedRef.current = true;
 			// Reset replica present state when joining new call
