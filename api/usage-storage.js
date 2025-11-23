@@ -9,9 +9,29 @@ async function initKV() {
   kvInitialized = true;
   
   try {
-    const kvModule = await import('@vercel/kv');
-    kv = kvModule.kv;
-    console.log('[usage-storage] Vercel KV initialized');
+    // Check if KV environment variables are set
+    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+      // Try @vercel/kv first (recommended for Vercel)
+      try {
+        const kvModule = await import('@vercel/kv');
+        // @vercel/kv exports kv directly and auto-uses env vars
+        kv = kvModule.kv || kvModule.default;
+        if (kv) {
+          console.log('[usage-storage] Vercel KV initialized via @vercel/kv');
+          return kv;
+        }
+      } catch (vercelKvError) {
+        console.warn('[usage-storage] @vercel/kv failed, trying @upstash/redis:', vercelKvError.message);
+      }
+      
+      // Fallback to @upstash/redis directly
+      const redisModule = await import('@upstash/redis');
+      kv = redisModule.Redis.fromEnv();
+      console.log('[usage-storage] Vercel KV initialized via @upstash/redis');
+    } else {
+      console.warn('[usage-storage] KV environment variables not found, using in-memory storage (data will not persist)');
+      kv = null;
+    }
   } catch (error) {
     console.warn('[usage-storage] Vercel KV not available, using in-memory storage (data will not persist):', error.message);
     kv = null;
