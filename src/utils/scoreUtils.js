@@ -155,16 +155,16 @@ export function scoreToNicePercentage(score) {
 	return percentage;
 }
 
-/**
- * Gets the current score context string for system messages
- * @param {string} userId - User identifier (deprecated, kept for compatibility)
- * @param {string} contextId - Context identifier (deprecated, kept for compatibility)
- * @param {number} currentScore - Current score from state (defaults to 0)
- * @returns {string} - Formatted score context like "<current_score>+3</current_score>"
- */
-export function getCurrentScoreContext(userId, contextId, currentScore = 0) {
-	const scoreString = currentScore >= 0 ? `+${currentScore}` : `${currentScore}`;
-	const context = `<current_score>${scoreString}</current_score>`;
-	return context;
-}
+// /**
+//  * Gets the current score context string for system messages
+//  * @param {string} userId - User identifier (deprecated, kept for compatibility)
+//  * @param {string} contextId - Context identifier (deprecated, kept for compatibility)
+//  * @param {number} currentScore - Current score from state (defaults to 0)
+//  * @returns {string} - Formatted score context like "<current_score>+3</current_score>"
+//  */
+// export function getCurrentScoreContext(userId, contextId, currentScore = 0) {
+// 	const scoreString = currentScore >= 0 ? `+${currentScore}` : `${currentScore}`;
+// 	const context = `<current_score>${scoreString}</current_score>`;
+// 	return context;
+// }
 

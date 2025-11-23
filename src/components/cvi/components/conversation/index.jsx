@@ -15,7 +15,7 @@ import { useCVICall } from '../../hooks/use-cvi-call';
 import { useLocalCamera } from '../../hooks/use-local-camera';
 import { useLocalMicrophone } from '../../hooks/use-local-microphone';
 import { useScoreTracking } from '../../../../hooks/useScoreTracking';
-import { getCurrentScoreContext } from '../../../../utils/scoreUtils';
+// import { getCurrentScoreContext } from '../../../../utils/scoreUtils';
 import { get5SecondMessages } from '../../../../utils/santaGreetings';
 import { AudioWave } from '../audio-wave';
 import { NaughtyNiceBar } from '../../../NaughtyNiceBar/NaughtyNiceBar';
@@ -124,6 +124,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	const { isCamMuted, onToggleCamera } = useLocalCamera();
 	const { isMicMuted, onToggleMicrophone, localSessionId } = useLocalMicrophone();
 	const { currentScore, processMessage } = useScoreTracking();
+	const replicaIds = useReplicaIDs();
 	const [countdown, setCountdown] = useState(180); // Will be updated with remaining time
 	const [showMicDropdown, setShowMicDropdown] = useState(false);
 	const [showVideoDropdown, setShowVideoDropdown] = useState(false);
@@ -143,6 +144,8 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	const muteTimeoutRef = useRef(null);
 	const hasUnmutedAfterJoinRef = useRef(false);
 	const replicaPresentProcessedRef = useRef(false);
+	const waitingForReplicaRef = useRef(false);
+	const replicaCheckIntervalRef = useRef(null);
 
 	const handleLeave = useCallback(() => {
 		leaveCall();
@@ -342,27 +345,27 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 					setIsReplicaPresent(true);
 					replicaPresentProcessedRef.current = true;
 					
-					if (!scoreContextSentRef.current && conversationId) {
-						try {
-							const scoreContext = getCurrentScoreContext('user', 'santa-call', currentScore);
+					// if (!scoreContextSentRef.current && conversationId) {
+					// 	try {
+					// 		const scoreContext = getCurrentScoreContext('user', 'santa-call', currentScore);
 
-							if (sendAppMessage) {
-								sendAppMessage({
-									message_type: "conversation",
-									event_type: "conversation.respond",
-									conversation_id: conversationId,
-									properties: {
-										text: scoreContext,
-									},
-								});
-								scoreContextSentRef.current = true;
-							} else {
-								console.error('[Conversation] sendAppMessage is not available!');
-							}
-						} catch (error) {
-							console.error('[Conversation] Error sending score context:', error);
-						}
-					}
+					// 		if (sendAppMessage) {
+					// 			sendAppMessage({
+					// 				message_type: "conversation",
+					// 				event_type: "conversation.respond",
+					// 				conversation_id: conversationId,
+					// 				properties: {
+					// 					text: scoreContext,
+					// 				},
+					// 			});
+					// 			scoreContextSentRef.current = true;
+					// 		} else {
+					// 			console.error('[Conversation] sendAppMessage is not available!');
+					// 		}
+					// 	} catch (error) {
+					// 		console.error('[Conversation] Error sending score context:', error);
+					// 	}
+					// }
 				}
 				// Silently ignore duplicate events - no need to log them
 			}
@@ -484,39 +487,124 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 		}
 	}, [meetingState, onLeave]);
 
-	// Participant only joins when "JOIN VIDEO CALL" is pressed
+	// Participant only joins when "JOIN VIDEO CALL" is pressed AND replica is confirmed to be ready
 	// According to Tavus docs, replica automatically joins the Daily.co room when conversation is created
-	// The greeting fires when participant joins, so we must wait until "JOIN VIDEO CALL" is pressed
 	// Flow: 
-	// 1. Conversation is created when "answer his call" is pressed → replica joins automatically (Tavus handles this)
-	// 2. User goes through hair check
+	// 1. Conversation is created when "answer his call" is pressed → replica should join automatically (Tavus handles this)
+	// 2. User goes through hair check (gives replica time to join)
 	// 3. User clicks "JOIN VIDEO CALL" → shouldJoin becomes true
-	// 4. Participant joins the call (daily.join) - replica should already be waiting
-	// 5. Greeting fires when participant joins (controlled by Tavus)
-	// 6. We wait for system.replica_present event to confirm replica is in the call
-	// 7. Only after replica is present do we consider participant "fully joined"
+	// 4. We check conversation status via Tavus API to verify replica is ready
+	// 5. Once replica is confirmed ready, participant joins the Daily room
+	// 6. Greeting fires when participant joins (controlled by Tavus)
+	// 7. We wait for system.replica_present event to confirm replica is in the call
+	// 8. Only after replica is present do we consider participant "fully joined"
 	useEffect(() => {
-		if (conversationUrl && shouldJoin && !hasJoinedRef.current) {
-			console.log('[Conversation] Joining call - user clicked JOIN VIDEO CALL button');
-			console.log('[Conversation] Replica should already be in the room (joined when conversation was created)');
-			console.log('[Conversation] Greeting will fire when participant joins');
-			joinCall({ url: conversationUrl });
-			hasJoinedRef.current = true;
-			hasUnmutedAfterJoinRef.current = false;
-			replicaPresentProcessedRef.current = false;
-			// Reset replica present state when joining new call
-			setIsReplicaPresent(false);
-		} else if (!shouldJoin || !conversationUrl) {
+		if (conversationUrl && conversationId && shouldJoin && !hasJoinedRef.current) {
+			console.log('[Conversation] User clicked JOIN VIDEO CALL - checking if replica is ready before joining...');
+			waitingForReplicaRef.current = true;
+			
+			// Check conversation status via Tavus API to verify replica is ready
+			const checkForReplica = async () => {
+				try {
+					const response = await fetch(`/api/check-conversation-status?conversationId=${encodeURIComponent(conversationId)}`, {
+						credentials: 'include'
+					});
+					
+					if (response.ok) {
+						const data = await response.json();
+						if (data.hasReplica) {
+							console.log('[Conversation] Replica confirmed ready - joining call now');
+							// Clear polling interval
+							if (replicaCheckIntervalRef.current) {
+								clearInterval(replicaCheckIntervalRef.current);
+								replicaCheckIntervalRef.current = null;
+							}
+							waitingForReplicaRef.current = false;
+							// Now join the call
+							joinCall({ url: conversationUrl });
+							hasJoinedRef.current = true;
+							hasUnmutedAfterJoinRef.current = false;
+							replicaPresentProcessedRef.current = false;
+							setIsReplicaPresent(false);
+						} else {
+							console.log('[Conversation] Replica not yet ready (status:', data.status, '), will check again...');
+						}
+					} else {
+						console.error('[Conversation] Failed to check conversation status:', response.status);
+						// Fallback: if we can't check status, assume replica is ready and join
+						// (replica should join automatically when conversation is created)
+						if (!replicaCheckIntervalRef.current) {
+							console.warn('[Conversation] Status check failed - assuming replica is ready and joining');
+							waitingForReplicaRef.current = false;
+							joinCall({ url: conversationUrl });
+							hasJoinedRef.current = true;
+							hasUnmutedAfterJoinRef.current = false;
+							replicaPresentProcessedRef.current = false;
+							setIsReplicaPresent(false);
+						}
+					}
+				} catch (error) {
+					console.error('[Conversation] Error checking conversation status:', error);
+					// Fallback: if error, assume replica is ready and join
+					if (!replicaCheckIntervalRef.current) {
+						console.warn('[Conversation] Status check error - assuming replica is ready and joining');
+						waitingForReplicaRef.current = false;
+						joinCall({ url: conversationUrl });
+						hasJoinedRef.current = true;
+						hasUnmutedAfterJoinRef.current = false;
+						replicaPresentProcessedRef.current = false;
+						setIsReplicaPresent(false);
+					}
+				}
+			};
+			
+			// Check immediately
+			checkForReplica();
+			
+			// Poll every 500ms until replica is ready (max 10 seconds = 20 attempts)
+			let attempts = 0;
+			const maxAttempts = 20;
+			replicaCheckIntervalRef.current = setInterval(() => {
+				attempts++;
+				if (attempts >= maxAttempts) {
+					console.warn('[Conversation] Timeout waiting for replica - joining anyway (replica should join automatically)');
+					clearInterval(replicaCheckIntervalRef.current);
+					replicaCheckIntervalRef.current = null;
+					waitingForReplicaRef.current = false;
+					joinCall({ url: conversationUrl });
+					hasJoinedRef.current = true;
+					hasUnmutedAfterJoinRef.current = false;
+					replicaPresentProcessedRef.current = false;
+					setIsReplicaPresent(false);
+					return;
+				}
+				checkForReplica();
+			}, 500);
+			
+		} else if (!shouldJoin || !conversationUrl || !conversationId) {
 			// Reset join flag if shouldJoin becomes false (e.g., call ended/cancelled) or conversationUrl changes
+			if (replicaCheckIntervalRef.current) {
+				clearInterval(replicaCheckIntervalRef.current);
+				replicaCheckIntervalRef.current = null;
+			}
 			hasJoinedRef.current = false;
 			hasUnmutedAfterJoinRef.current = false;
 			replicaPresentProcessedRef.current = false;
+			waitingForReplicaRef.current = false;
 			// Clear mute timeout if call is cancelled
 			if (muteTimeoutRef.current) {
 				clearTimeout(muteTimeoutRef.current);
 				muteTimeoutRef.current = null;
 			}
 		}
+		
+		// Cleanup on unmount
+		return () => {
+			if (replicaCheckIntervalRef.current) {
+				clearInterval(replicaCheckIntervalRef.current);
+				replicaCheckIntervalRef.current = null;
+			}
+		};
 	}, [conversationUrl, shouldJoin, joinCall]);
 
 	// Mute participant for first 6 seconds after joining

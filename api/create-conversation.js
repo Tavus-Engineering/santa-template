@@ -156,9 +156,18 @@ export default async function handler(req, res) {
 
     const data = await response.json()
     
+    // Log full response for debugging
+    console.log('[create-conversation] Tavus API response:', JSON.stringify(data, null, 2))
+    
+    const conversationUrl = data.conversation_url || data.url
+    const conversationId = data.conversation_id || data.id
+    
+    console.log('[create-conversation] Conversation created - URL:', conversationUrl, 'ID:', conversationId)
+    console.log('[create-conversation] Replica should automatically join Daily room when conversation is created')
+    
     return res.status(200).json({
-      conversation_url: data.conversation_url || data.url,
-      conversation_id: data.conversation_id || data.id
+      conversation_url: conversationUrl,
+      conversation_id: conversationId
     })
   } catch (error) {
     console.error('[create-conversation] Error:', error)
