@@ -3,7 +3,6 @@ import { DailyVideo, useDaily, useDevices } from '@daily-co/daily-react';
 import { useStartHaircheck } from '../../hooks/use-start-haircheck';
 import { useLocalCamera } from '../../hooks/use-local-camera';
 import { useLocalMicrophone } from '../../hooks/use-local-microphone';
-import { LanguageSelector } from '../../../LanguageSelector/LanguageSelector';
 
 import styles from './hair-check.module.css';
 
@@ -28,7 +27,7 @@ const JoinBtn = ({ onClick, disabled, className, loading, loadingText }) => {
 	);
 };
 
-export const HairCheck = memo(({ isJoinBtnLoading = false, onJoin, onCancel, conversationUrl, conversationId, selectedLanguage, onLanguageChange }) => {
+export const HairCheck = memo(({ isJoinBtnLoading = false, onJoin, onCancel, conversationUrl, conversationId }) => {
 	const daily = useDaily();
 	const { localSessionId, isCamMuted, onToggleCamera, isCamReady } = useLocalCamera();
 	const { isMicMuted, onToggleMicrophone } = useLocalMicrophone();
@@ -233,12 +232,6 @@ export const HairCheck = memo(({ isJoinBtnLoading = false, onJoin, onCancel, con
 						<div className={styles.statusIndicator}>
 							<div className={styles.statusIcon}></div>
 							<span>SANTA HAS JOINED THE SESSION</span>
-						</div>
-						<div className={styles.languageSelectorWrapper}>
-							<LanguageSelector
-								selectedLanguage={selectedLanguage}
-								onLanguageChange={onLanguageChange}
-							/>
 						</div>
 						{isPermissionsDenied ? (
 							<button

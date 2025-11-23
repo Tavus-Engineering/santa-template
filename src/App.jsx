@@ -27,7 +27,7 @@ function App() {
   const flappyWindowRef = useRef(null)
 
   // Only start conversation when user clicks "Answer His Call"
-  const { conversationUrl, conversationId, error } = useTavusConversation(isAnswered, false, selectedLanguage)
+  const { conversationUrl, conversationId, error } = useTavusConversation(isAnswered, false, selectedLanguage, isHairCheckComplete)
 
   const handleSantaIconClick = () => {
     if (isMinimized) {
@@ -67,7 +67,11 @@ function App() {
       
       <HeroText />
 
-      <Footer />
+      <Footer 
+        selectedLanguage={selectedLanguage}
+        onLanguageChange={setSelectedLanguage}
+        isDisabled={isHairCheckComplete && !isCallEnded}
+      />
 
       <main className="main-content">
         <WindowIcon

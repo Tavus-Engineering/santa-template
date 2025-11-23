@@ -132,8 +132,6 @@ export const VideoCallWindow = ({
                   onCancel={handleCancel}
                   conversationUrl={conversationUrl}
                   conversationId={conversationId}
-                  selectedLanguage={selectedLanguage}
-                  onLanguageChange={onLanguageChange}
                 />
               </div>
             ) : isCallEnded ? (

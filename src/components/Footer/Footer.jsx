@@ -1,22 +1,30 @@
 import { useCountdown } from '../../hooks/useCountdown'
 import { ASSET_PATHS } from '../../utils/assetPaths'
+import { LanguageSelector } from '../LanguageSelector/LanguageSelector'
 import styles from './Footer.module.css'
 
-export const Footer = () => {
+export const Footer = ({ selectedLanguage, onLanguageChange, isDisabled = false }) => {
   const timeUntilChristmas = useCountdown()
 
   return (
     <div className={styles.greyFooter}>
       <div className={styles.greyFooterContent}>
-        <img 
-          src={ASSET_PATHS.images.footerLogo} 
-          alt="Powered by TAVUS" 
-          className={styles.greyFooterLogo} 
-          onClick={() => {
-            window.open('https://tavus.io', '_blank')
-          }}
-          style={{ cursor: 'pointer' }}
-        />
+        <div className={styles.greyFooterLeft}>
+          <img 
+            src={ASSET_PATHS.images.footerLogo} 
+            alt="Powered by TAVUS" 
+            className={styles.greyFooterLogo} 
+            onClick={() => {
+              window.open('https://tavus.io', '_blank')
+            }}
+            style={{ cursor: 'pointer' }}
+          />
+          <LanguageSelector 
+            selectedLanguage={selectedLanguage}
+            onLanguageChange={onLanguageChange}
+            disabled={isDisabled}
+          />
+        </div>
         <div className={styles.greyFooterCountdown}>
           <div className={styles.greyFooterCountdownTitle}>CHRISTMAS COUNTDOWN</div>
           <div className={styles.countdownItems}>

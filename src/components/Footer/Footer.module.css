@@ -5,13 +5,14 @@
   right: 0;
   height: 60px;
   background: #EAE5DE;
-  z-index: 0;
+  z-index: 1000;
   box-sizing: border-box;
   border-top: 1px solid #4A4A4A;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 40px;
+  pointer-events: auto;
 }
 
 .greyFooterContent {
@@ -20,6 +21,14 @@
   justify-content: space-between;
   width: 100%;
   max-width: 100%;
+}
+
+.greyFooterLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  z-index: 1001;
 }
 
 .greyFooterLogo {
@@ -103,6 +112,12 @@
     flex-direction: column;
     gap: 12px;
     padding: 12px 0;
+  }
+
+  .greyFooterLeft {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
   }
 
   .greyFooterLogo {

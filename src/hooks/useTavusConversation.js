@@ -5,7 +5,7 @@ import { getRandomGreeting } from '../utils/santaGreetings'
  * Custom hook for generating Tavus conversation URL
  * Starts preloading when window is visible to optimize join times
  */
-export const useTavusConversation = (isAnswered, shouldPreload = false, selectedLanguage = 'en') => {
+export const useTavusConversation = (isAnswered, shouldPreload = false, selectedLanguage = 'en', isConversationStarted = false) => {
   const [conversationUrl, setConversationUrl] = useState(null)
   const [conversationId, setConversationId] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
@@ -23,9 +23,9 @@ export const useTavusConversation = (isAnswered, shouldPreload = false, selected
     }
   }, [isAnswered])
 
-  // Reset conversation if language changes before answering
+  // Reset conversation if language changes, but only if conversation hasn't started yet
   useEffect(() => {
-    if (!isAnswered && lastLanguage !== selectedLanguage) {
+    if (lastLanguage !== selectedLanguage && !isConversationStarted) {
       if (conversationUrl) {
         console.log('[useTavusConversation] Language changed from', lastLanguage, 'to', selectedLanguage, '- resetting conversation')
         setConversationUrl(null)
@@ -33,8 +33,12 @@ export const useTavusConversation = (isAnswered, shouldPreload = false, selected
         setError(null)
       }
       setLastLanguage(selectedLanguage)
+    } else if (lastLanguage !== selectedLanguage) {
+      // Language changed but conversation already started - just update lastLanguage without resetting
+      console.log('[useTavusConversation] Language changed from', lastLanguage, 'to', selectedLanguage, '- conversation already started, not resetting')
+      setLastLanguage(selectedLanguage)
     }
-  }, [selectedLanguage, isAnswered, lastLanguage, conversationUrl])
+  }, [selectedLanguage, lastLanguage, conversationUrl, isConversationStarted])
 
   useEffect(() => {
     // Start generating if we should preload (window visible) or if call is answered
