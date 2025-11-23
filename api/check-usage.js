@@ -13,6 +13,8 @@ export default async function handler(req, res) {
   if (origin) {
     res.setHeader('Access-Control-Allow-Origin', origin)
     res.setHeader('Access-Control-Allow-Credentials', 'true')
+    // Expose Set-Cookie header so client can verify it was set
+    res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie, X-Cookie-Set, X-User-ID')
   } else {
     // Last resort: don't set credentials if we can't determine origin
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -36,13 +38,23 @@ export default async function handler(req, res) {
     const usageStorage = await import('./usage-storage.js')
     const { getOrCreateUserId } = await import('./cookie-utils.js')
     
-    // Get user identifier from cookie (generates new one if doesn't exist)
+    // IMPORTANT: Get user identifier BEFORE setting response
+    // This ensures the cookie is set before res.json() is called
     const identifier = getOrCreateUserId(req, res)
     
     const usage = usageStorage.getUsage(identifier)
     const canStart = usageStorage.canStartSession(identifier)
     
     console.log('[check-usage] User:', identifier.substring(0, 20) + '...', 'Used:', usage.usedSeconds, 'Remaining:', usage.remainingSeconds, 'Can start:', canStart)
+    
+    // Ensure cookie headers are set before sending response
+    // The cookie should already be set by getOrCreateUserId, but we'll verify
+    const setCookieHeader = res.getHeader('Set-Cookie')
+    if (setCookieHeader) {
+      console.log('[check-usage] Cookie is being set:', typeof setCookieHeader === 'string' ? setCookieHeader.substring(0, 50) + '...' : 'present')
+    } else {
+      console.warn('[check-usage] WARNING: Set-Cookie header not found in response!')
+    }
     
     return res.status(200).json({
       canStart,

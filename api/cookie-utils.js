@@ -40,9 +40,13 @@ export function getOrCreateUserId(req, res) {
   // Log cookie debugging info
   const hasCookieHeader = !!req.headers.cookie
   const cookieCount = Object.keys(cookies).length
-  console.log('[cookie-utils] Cookie header present:', hasCookieHeader, 'Parsed cookies:', cookieCount, 'Host:', req.headers.host, 'Origin:', req.headers.origin)
+  const foundUserId = cookies[cookieName]
+  console.log('[cookie-utils] Cookie header present:', hasCookieHeader, 'Parsed cookies:', cookieCount, 'Found userId:', !!foundUserId, 'Host:', req.headers.host, 'Origin:', req.headers.origin)
+  if (hasCookieHeader && cookieCount > 0) {
+    console.log('[cookie-utils] Cookie keys:', Object.keys(cookies).join(', '))
+  }
   
-  let userId = cookies[cookieName]
+  let userId = foundUserId
   
   // If no user ID exists, generate one and set it in a cookie
   if (!userId) {
@@ -66,14 +70,25 @@ export function getOrCreateUserId(req, res) {
       `Max-Age=${60 * 60 * 24 * 365}`, // 1 year
     ].join('; ')
     
-    // Set cookie header - ensure it's set before other headers
-    res.setHeader('Set-Cookie', cookieOptions)
-    
-    // Also set a response header to help debug
-    res.setHeader('X-Cookie-Set', 'true')
-    res.setHeader('X-User-ID', userId.substring(0, 20) + '...')
-    
-    console.log('[cookie-utils] Created new user ID:', userId.substring(0, 20) + '...', 'Production:', isProduction, 'HTTPS:', isHttps, 'Cookie:', cookieOptions.substring(0, 80) + '...')
+    // Set cookie header - MUST be set before res.json() is called
+    // Use appendHeader to ensure it's added even if other headers exist
+    try {
+      res.setHeader('Set-Cookie', cookieOptions)
+      
+      // Also set a response header to help debug
+      res.setHeader('X-Cookie-Set', 'true')
+      res.setHeader('X-User-ID', userId.substring(0, 20) + '...')
+      
+      // Verify the header was set
+      const verifyHeader = res.getHeader('Set-Cookie')
+      if (!verifyHeader) {
+        console.error('[cookie-utils] ERROR: Set-Cookie header was not set!')
+      } else {
+        console.log('[cookie-utils] Created new user ID:', userId.substring(0, 20) + '...', 'Production:', isProduction, 'HTTPS:', isHttps, 'Cookie set:', !!verifyHeader)
+      }
+    } catch (headerError) {
+      console.error('[cookie-utils] Error setting cookie header:', headerError)
+    }
   } else {
     console.log('[cookie-utils] Using existing user ID:', userId.substring(0, 20) + '...')
   }
