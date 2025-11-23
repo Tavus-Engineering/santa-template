@@ -134,6 +134,8 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	const echo5sIndexRef = useRef(0);
 	const isReplicaSpeakingRef = useRef(false);
 	const timeCheck60sPendingRef = useRef(false);
+	const callStartTimeRef = useRef(null);
+	const usageRecordedRef = useRef(false);
 
 	const handleLeave = useCallback(() => {
 		leaveCall();
@@ -145,10 +147,13 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 		leave: handleLeave
 	}), [handleLeave]);
 
-	// Track countdown timer (2 minutes)
+	// Track countdown timer (3 minutes) and call start time
 	useEffect(() => {
 		if (meetingState === 'joined-meeting') {
 			setCountdown(180); // Reset to 3 minutes when joined
+			// Record call start time
+			callStartTimeRef.current = Date.now();
+			usageRecordedRef.current = false;
 			// Reset echo message flags when joining
 			echo5sSentRef.current = false;
 			timeCheck60sSentRef.current = false;
@@ -384,6 +389,31 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 		const secs = seconds % 60;
 		return `${mins}:${secs.toString().padStart(2, '0')}`;
 	};
+
+	// Record usage when call ends
+	useEffect(() => {
+		if ((meetingState === 'left-meeting' || meetingState === 'ended' || meetingState === 'error') && 
+		    callStartTimeRef.current && !usageRecordedRef.current) {
+			const callDuration = Math.floor((Date.now() - callStartTimeRef.current) / 1000);
+			const actualDuration = Math.min(callDuration, 180); // Cap at 3 minutes
+			
+			// Record usage to backend
+			fetch('/api/record-usage', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					durationSeconds: actualDuration
+				})
+			}).catch(error => {
+				console.error('[Conversation] Failed to record usage:', error);
+			});
+			
+			usageRecordedRef.current = true;
+			console.log('[Conversation] Recorded usage:', actualDuration, 'seconds');
+		}
+	}, [meetingState]);
 
 	useEffect(() => {
 		if (meetingState === 'error') {

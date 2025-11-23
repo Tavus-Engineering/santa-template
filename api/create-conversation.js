@@ -66,6 +66,43 @@ export default async function handler(req, res) {
     // Continue without BotID protection if it's not properly configured
   }
 
+  // Daily usage limit check
+  // Check if bypass is enabled via query parameter (for testing)
+  const bypassUsage = req.query.bypassUsage === 'true'
+  
+  if (!bypassUsage) {
+    try {
+      const usageStorage = await import('./usage-storage.js')
+      
+      // Get user identifier from IP address
+      const identifier = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
+                        req.headers['x-vercel-ip'] || 
+                        req.connection?.remoteAddress || 
+                        'unknown'
+      
+      const canStart = usageStorage.canStartSession(identifier)
+      const usage = usageStorage.getUsage(identifier)
+      
+      if (!canStart) {
+        console.log('[create-conversation] Daily usage limit reached for:', identifier, 'Used:', usage.usedSeconds, 'seconds')
+        return res.status(429).json({
+          error: 'daily_limit_reached',
+          message: 'Daily usage limit reached. You have used all 3 minutes for today.',
+          usedSeconds: usage.usedSeconds,
+          remainingSeconds: 0,
+          maxDailySeconds: usageStorage.MAX_DAILY_SECONDS
+        })
+      }
+      
+      console.log('[create-conversation] Usage check passed for:', identifier, 'Remaining:', usage.remainingSeconds, 'seconds')
+    } catch (error) {
+      // If usage check fails, log but continue (fail open for reliability)
+      console.warn('[create-conversation] Usage check failed, continuing:', error.message)
+    }
+  } else {
+    console.log('[create-conversation] Usage check bypassed (test mode)')
+  }
+
   try {
     const { custom_greeting } = req.body
 
