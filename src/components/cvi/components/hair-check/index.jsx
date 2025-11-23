@@ -1,10 +1,8 @@
 import React, { memo, useEffect, useState, useRef } from 'react';
-import { DailyVideo, useDaily, useDevices, useMeetingState } from '@daily-co/daily-react';
+import { DailyVideo, useDaily, useDevices } from '@daily-co/daily-react';
 import { useStartHaircheck } from '../../hooks/use-start-haircheck';
 import { useLocalCamera } from '../../hooks/use-local-camera';
 import { useLocalMicrophone } from '../../hooks/use-local-microphone';
-import { useCVICall } from '../../hooks/use-cvi-call';
-import { useReplicaIDs } from '../../hooks/use-replica-ids';
 import { LanguageSelector } from '../../../LanguageSelector/LanguageSelector';
 
 import styles from './hair-check.module.css';
@@ -40,7 +38,6 @@ export const HairCheck = memo(({ isJoinBtnLoading = false, onJoin, onCancel, con
 	const [cameraStarted, setCameraStarted] = useState(false);
 	const micDropdownRef = useRef(null);
 	const videoDropdownRef = useRef(null);
-	const hasPreloadedRef = useRef(false);
 
 	const {
 		isPermissionsPrompt,
@@ -50,30 +47,12 @@ export const HairCheck = memo(({ isJoinBtnLoading = false, onJoin, onCancel, con
 		requestPermissions,
 	} = useStartHaircheck();
 
-	const { joinCall } = useCVICall();
-	const meetingState = useMeetingState();
-	const replicaIds = useReplicaIDs();
-	const hasReplica = replicaIds.length > 0;
-
 	useEffect(() => {
 		requestPermissions();
 	}, []);
 
-	// Preload: join the call early so Santa can start spinning up
-	useEffect(() => {
-		if (conversationUrl && !hasPreloadedRef.current && daily && meetingState !== 'joined-meeting' && meetingState !== 'joining-meeting') {
-			console.log('[HairCheck] Preloading: joining call to spin up Santa. URL:', conversationUrl);
-			joinCall({ url: conversationUrl });
-			hasPreloadedRef.current = true;
-		}
-	}, [conversationUrl, daily, meetingState, joinCall]);
-
-	// Log when Santa joins
-	useEffect(() => {
-		if (hasReplica) {
-			console.log('[HairCheck] Santa has joined! Replica IDs:', replicaIds);
-		}
-	}, [hasReplica, replicaIds]);
+	// Note: We don't join the call here anymore - we wait until the user clicks "JOIN VIDEO CALL"
+	// This ensures the greeting fires when the user actually enters the call, not during preload
 
 	// Track when camera actually starts (for iOS Safari)
 	useEffect(() => {
@@ -85,12 +64,10 @@ export const HairCheck = memo(({ isJoinBtnLoading = false, onJoin, onCancel, con
 		}
 	}, [daily, isCamReady, isCamMuted]);
 
-	// Button is enabled when:
-	// 1. Camera permissions are granted
-	// 2. Santa (replica) has joined the call
+	// Button is enabled when camera permissions are granted
+	// Note: We don't check for Santa here since we join the call after the user clicks the button
 	const cameraReady = isPermissionsGranted || (isCamReady && cameraStarted);
-	const santaReady = hasReplica;
-	const canProceed = cameraReady && santaReady;
+	const canProceed = cameraReady;
 
 	// Close dropdowns when clicking outside
 	useEffect(() => {
