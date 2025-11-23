@@ -51,8 +51,15 @@ export const useTavusConversation = (isAnswered, shouldPreload = false, selected
 
           console.log('[useTavusConversation] Making API request to serverless function...')
           
+          // For testing: add ?testCountry=XX to URL to simulate geoblocking
+          const urlParams = new URLSearchParams(window.location.search)
+          const testCountry = urlParams.get('testCountry')
+          const apiUrl = testCountry 
+            ? `/api/create-conversation?testCountry=${testCountry}`
+            : '/api/create-conversation'
+          
           // Call serverless function instead of Tavus API directly
-          const response = await fetch('/api/create-conversation', {
+          const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -90,6 +97,12 @@ export const useTavusConversation = (isAnswered, shouldPreload = false, selected
               errorData = { error: errorText }
             }
             console.error('[useTavusConversation] Failed to generate conversation URL:', response.status, errorData)
+            
+            // Handle geoblocking (403 with geoblocked error)
+            if (response.status === 403 && errorData.error === 'geoblocked') {
+              setError('geoblocked')
+              return
+            }
             
             // Handle 400 status code - check if it's max concurrency or another error
             if (response.status === 400) {

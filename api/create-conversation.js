@@ -22,6 +22,30 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
+  // Geoblocking check
+  // Vercel provides country code in headers: x-vercel-ip-country or x-vercel-ip-country-code
+  // For testing: add ?testCountry=XX to simulate a country (e.g., ?testCountry=CN)
+  const testCountry = req.query.testCountry
+  const countryCode = testCountry || req.headers['x-vercel-ip-country'] || req.headers['x-vercel-ip-country-code']
+  const blockedCountries = process.env.BLOCKED_COUNTRIES 
+    ? process.env.BLOCKED_COUNTRIES.split(',').map(c => c.trim().toUpperCase())
+    : []
+  
+  // For testing: if testCountry is provided, check if it's in blocked list OR use TEST_BLOCKED_COUNTRIES
+  const testBlockedCountries = process.env.TEST_BLOCKED_COUNTRIES 
+    ? process.env.TEST_BLOCKED_COUNTRIES.split(',').map(c => c.trim().toUpperCase())
+    : ['CN', 'RU', 'KP'] // Default test countries if no env var set
+  
+  const countriesToCheck = testCountry ? testBlockedCountries : blockedCountries
+  
+  if (countryCode && countriesToCheck.length > 0 && countriesToCheck.includes(countryCode.toUpperCase())) {
+    console.log('[create-conversation] Geoblocked request from country:', countryCode, testCountry ? '(test mode)' : '')
+    return res.status(403).json({ 
+      error: 'geoblocked',
+      message: 'Service not available in your region'
+    })
+  }
+
   // BotID verification
   // Error handling ensures API continues to work even if BotID isn't configured
   // In development, checkBotId() always returns { isBot: false } by default

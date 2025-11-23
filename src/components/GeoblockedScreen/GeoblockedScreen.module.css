@@ -1,0 +1,47 @@
+.geoblockedContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0 40px;
+  text-align: center;
+}
+
+.errorMessage {
+  max-width: 800px;
+  width: 100%;
+}
+
+.errorTitle {
+  font-family: 'Perfectly Nineties', serif;
+  font-size: clamp(40px, 8vw, 120px);
+  font-weight: 400;
+  color: #333;
+  line-height: 1.2;
+  text-transform: lowercase;
+  margin-bottom: 30px;
+}
+
+.errorDescription {
+  font-family: 'Berkeley Mono', monospace;
+  font-size: clamp(16px, 2vw, 24px);
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .errorTitle {
+    font-size: clamp(40px, 12vw, 100px);
+  }
+  
+  .errorDescription {
+    font-size: clamp(14px, 4vw, 20px);
+  }
+}
+

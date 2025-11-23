@@ -1,8 +1,10 @@
 import { useState, useRef } from 'react'
 import './App.css'
 import { useAssetPreloader } from './hooks/useAssetPreloader'
+import { useGeoblockCheck } from './hooks/useGeoblockCheck'
 import { useTavusConversation } from './hooks/useTavusConversation'
 import { LoadingScreen } from './components/LoadingScreen/LoadingScreen'
+import { GeoblockedScreen } from './components/GeoblockedScreen/GeoblockedScreen'
 import { Background } from './components/Background/Background'
 import { Header } from './components/Header/Header'
 import { HeroText } from './components/HeroText/HeroText'
@@ -14,6 +16,7 @@ import { ASSET_PATHS } from './utils/assetPaths'
 
 function App() {
   const isLoading = useAssetPreloader()
+  const { isGeoblocked, isChecking } = useGeoblockCheck()
   const [isMinimized, setIsMinimized] = useState(false)
   const [isFlappyMinimized, setIsFlappyMinimized] = useState(true)
   const [isAnswered, setIsAnswered] = useState(false)
@@ -47,8 +50,13 @@ function App() {
   }
 
   // Show loading screen
-  if (isLoading) {
+  if (isLoading || isChecking) {
     return <LoadingScreen />
+  }
+
+  // Show geoblocked screen if user is geoblocked
+  if (isGeoblocked || error === 'geoblocked') {
+    return <GeoblockedScreen />
   }
 
   return (
