@@ -134,7 +134,7 @@ export default async function handler(req, res) {
     // Only include custom_greeting if it's provided and not empty
     const requestBody = {
       enable_dynamic_greeting: false,
-      persona_id: 'p35ed39572e6',
+      persona_id: 'p78bae859efb',
       replica_id: 'r3fbe3834a3e',
       conversation_name: 'Santa Call'
     }
