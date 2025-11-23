@@ -66,7 +66,7 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('[check-conversation-status] Error:', error)
     return res.status(500).json({ 
-      error: 'Internal server error',
+      error: 'Internal server error', 
       message: error.message
     })
   }
