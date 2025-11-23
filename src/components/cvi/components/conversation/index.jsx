@@ -122,7 +122,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	const { isCamMuted, onToggleCamera } = useLocalCamera();
 	const { isMicMuted, onToggleMicrophone, localSessionId } = useLocalMicrophone();
 	const { currentScore, processMessage } = useScoreTracking();
-	const [countdown, setCountdown] = useState(180); // 3 minutes = 180 seconds
+	const [countdown, setCountdown] = useState(180); // Will be updated with remaining time
 	const [showMicDropdown, setShowMicDropdown] = useState(false);
 	const [showVideoDropdown, setShowVideoDropdown] = useState(false);
 	const [isToolbarVisible, setIsToolbarVisible] = useState(true);
@@ -147,10 +147,23 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 		leave: handleLeave
 	}), [handleLeave]);
 
-	// Track countdown timer (3 minutes) and call start time
+	// Fetch remaining time and initialize countdown timer
 	useEffect(() => {
 		if (meetingState === 'joined-meeting') {
-			setCountdown(180); // Reset to 3 minutes when joined
+			// Fetch remaining time from usage API
+			fetch('/api/check-usage')
+				.then(res => res.json())
+				.then(data => {
+					const remainingSeconds = Math.max(0, data.remainingSeconds || 180);
+					setCountdown(remainingSeconds);
+					console.log('[Conversation] Initialized timer with remaining time:', remainingSeconds, 'seconds');
+				})
+				.catch(error => {
+					console.error('[Conversation] Failed to fetch remaining time:', error);
+					// Fallback to 180 seconds if API call fails
+					setCountdown(180);
+				});
+			
 			// Record call start time
 			callStartTimeRef.current = Date.now();
 			usageRecordedRef.current = false;
@@ -163,6 +176,8 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 			scoreContextSentRef.current = false;
 			// Reset replica speaking state
 			isReplicaSpeakingRef.current = false;
+			
+			// Start countdown timer
 			const interval = setInterval(() => {
 				setCountdown(prev => {
 					if (prev <= 1) {
@@ -171,6 +186,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 					return prev - 1;
 				});
 			}, 1000);
+			
 			return () => clearInterval(interval);
 		} else {
 			setCountdown(180);
@@ -185,13 +201,13 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 		}
 	}, [countdown, meetingState, handleLeave]);
 
-	// Send time check utterance event at 60 seconds
+	// Send time check utterance event at 60 seconds (or when 60 seconds remain)
 	useEffect(() => {
 		if (!sendAppMessage || !conversationId || meetingState !== 'joined-meeting') {
 			return;
 		}
 
-		// Send time check utterance event at 60 seconds
+		// Send time check utterance event at 60 seconds remaining
 		if (countdown === 60 && !timeCheck60sSentRef.current && !timeCheck60sPendingRef.current) {
 			// Check if replica is currently speaking
 			if (isReplicaSpeakingRef.current) {
@@ -463,16 +479,9 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 			>
 				{/* Top Row: Call Controls */}
 				<div className={styles.footerControlsTop}>
-					{/* Volume Control */}
-					<div className={styles.volumeControl}>
-						<img 
-							src="/icons/volume.svg" 
-							alt="Volume" 
-							className={styles.volumeIcon}
-						/>
-						<div className={styles.volumeSlider}>
-							<div className={styles.volumeFill} style={{ width: '70%' }}></div>
-						</div>
+					{/* Timer Display */}
+					<div className={styles.timerControl}>
+						<span className={styles.timerText}>{formatDuration(countdown)}</span>
 					</div>
 
 					{/* Microphone Control */}

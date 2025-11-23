@@ -111,7 +111,7 @@
 	}
 	
 	
-	.volumeControl {
+	.timerControl {
 		border-right: 1px solid #4A4A4A;
 	}
 	
@@ -132,12 +132,11 @@
 }
 
 
-.volumeControl {
+.timerControl {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	justify-content: center;
 	flex: 1;
-	justify-content: flex-start;
 	padding: 8px 12px;
 	background: #EAE5DE;
 	border: none;
@@ -147,36 +146,13 @@
 	box-sizing: border-box;
 }
 
-.volumeIcon {
-	width: 14px;
-	height: 14px;
-	flex-shrink: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	object-fit: contain;
-}
-
-.volumeSlider {
-	width: 60px;
-	height: 8px;
-	background: #EAE5DE;
-	border: 1px solid #4A4A4A;
-	border-radius: 0;
-	position: relative;
-	overflow: hidden;
-	flex-shrink: 0;
-	box-sizing: border-box;
-}
-
-.volumeFill {
-	position: absolute;
-	left: 0;
-	top: 0;
-	height: 100%;
-	background: #000;
-	border-radius: 0;
-	transition: width 0.1s ease;
+.timerText {
+	color: #4A4A4A;
+	font-family: 'FK Raster Grotesk Compact', sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0.5px;
+	white-space: nowrap;
 }
 
 .controlButtonWrapper {
