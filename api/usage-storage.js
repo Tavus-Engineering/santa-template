@@ -44,6 +44,12 @@ async function initKV() {
 let memoryStore = new Map();
 
 export const MAX_DAILY_SECONDS = 180; // 3 minutes
+const MIN_USABLE_SECONDS = 7; // If less than 5 seconds remaining, treat as 0
+
+// Normalize remaining seconds: if less than MIN_USABLE_SECONDS, return 0
+function normalizeRemainingSeconds(remainingSeconds) {
+  return remainingSeconds < MIN_USABLE_SECONDS ? 0 : remainingSeconds;
+}
 
 function getTodayKey(identifier) {
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
@@ -98,9 +104,12 @@ export async function getUsage(identifier) {
     usage = memoryStore.get(key) || { usedSeconds: 0, sessions: [] };
   }
   
+  const rawRemaining = Math.max(0, MAX_DAILY_SECONDS - usage.usedSeconds);
+  const normalizedRemaining = normalizeRemainingSeconds(rawRemaining);
+  
   const result = {
     usedSeconds: usage.usedSeconds,
-    remainingSeconds: Math.max(0, MAX_DAILY_SECONDS - usage.usedSeconds),
+    remainingSeconds: normalizedRemaining,
     sessions: usage.sessions || []
   };
   
@@ -111,7 +120,7 @@ export async function getUsage(identifier) {
 
 export async function canStartSession(identifier) {
   const usage = await getUsage(identifier);
-  return usage.remainingSeconds > 0;
+  return usage.remainingSeconds >= MIN_USABLE_SECONDS;
 }
 
 export async function getRemainingTime(identifier) {
@@ -155,9 +164,12 @@ export async function recordSession(identifier, durationSeconds) {
     memoryStore.set(key, usage);
   }
   
+  const rawRemaining = Math.max(0, MAX_DAILY_SECONDS - usage.usedSeconds);
+  const normalizedRemaining = normalizeRemainingSeconds(rawRemaining);
+  
   const result = {
     usedSeconds: usage.usedSeconds,
-    remainingSeconds: Math.max(0, MAX_DAILY_SECONDS - usage.usedSeconds)
+    remainingSeconds: normalizedRemaining
   };
   
   console.log('[usage-storage] recordSession - After - Used:', result.usedSeconds, 'Remaining:', result.remainingSeconds, 'Store:', storeType);
@@ -167,12 +179,13 @@ export async function recordSession(identifier, durationSeconds) {
 
 export async function reserveTime(identifier, requestedSeconds) {
   const usage = await getUsage(identifier);
-  const remaining = Math.max(0, MAX_DAILY_SECONDS - usage.usedSeconds);
+  const remaining = usage.remainingSeconds; // Already normalized by getUsage
   const reserved = Math.min(requestedSeconds, remaining);
+  const remainingAfterReserve = normalizeRemainingSeconds(remaining - reserved);
   
   return {
     reservedSeconds: reserved,
-    remainingSeconds: remaining - reserved
+    remainingSeconds: remainingAfterReserve
   };
 }
 

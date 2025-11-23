@@ -4,7 +4,7 @@ import styles from './ConnectingScreen.module.css'
 export const ConnectingScreen = ({ error }) => {
   const getMessage = () => {
     if (error === 'dailyLimitReached') {
-      return "You've used all 3 minutes for today. Come back tomorrow!"
+      return "Sorry - Santa had to go back to his workshop. Come back again and he'll be ready to chat"
     }
     if (error === 'maxConcurrency') {
       return "Santa's busy with his elves, please try again later"

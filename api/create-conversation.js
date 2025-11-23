@@ -100,7 +100,7 @@ export default async function handler(req, res) {
         console.log('[create-conversation] Daily usage limit reached for:', identifier, 'Used:', usage.usedSeconds, 'seconds')
         return res.status(429).json({
           error: 'daily_limit_reached',
-          message: 'Daily usage limit reached. You have used all 3 minutes for today.',
+          message: "Sorry - Santa had to go back to his workshop. Come back again and he'll be ready to chat",
           usedSeconds: usage.usedSeconds,
           remainingSeconds: 0,
           maxDailySeconds: usageStorage.MAX_DAILY_SECONDS
