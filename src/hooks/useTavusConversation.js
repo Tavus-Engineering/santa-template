@@ -70,6 +70,7 @@ export const useTavusConversation = (isAnswered, shouldPreload = false, selected
           // Call serverless function instead of Tavus API directly
           const response = await fetch(apiUrl, {
             method: 'POST',
+            credentials: 'include',
             headers: {
               'Content-Type': 'application/json'
             },

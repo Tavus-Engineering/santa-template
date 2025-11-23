@@ -154,7 +154,9 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	useEffect(() => {
 		if (meetingState === 'joined-meeting' && isReplicaPresent) {
 			// Fetch remaining time from usage API
-			fetch('/api/check-usage')
+			fetch('/api/check-usage', {
+				credentials: 'include'
+			})
 				.then(res => res.json())
 				.then(data => {
 					const remainingSeconds = Math.max(0, data.remainingSeconds || 180);
@@ -424,6 +426,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 			// Record usage to backend
 			fetch('/api/record-usage', {
 				method: 'POST',
+				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json'
 				},

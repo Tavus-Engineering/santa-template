@@ -19,12 +19,10 @@ export default async function handler(req, res) {
 
   try {
     const usageStorage = await import('./usage-storage.js')
+    const { getOrCreateUserId } = await import('./cookie-utils.js')
     
-    // Get user identifier from IP address
-    const identifier = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
-                      req.headers['x-vercel-ip'] || 
-                      req.connection?.remoteAddress || 
-                      'unknown'
+    // Get user identifier from cookie (generates new one if doesn't exist)
+    const identifier = getOrCreateUserId(req, res)
     
     const usage = usageStorage.getUsage(identifier)
     const canStart = usageStorage.canStartSession(identifier)
