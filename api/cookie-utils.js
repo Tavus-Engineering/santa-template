@@ -56,18 +56,27 @@ export function getOrCreateUserId(req, res) {
     const isHttps = req.headers['x-forwarded-proto'] === 'https' || process.env.VERCEL_ENV === 'production'
     
     // Build cookie options - don't set Domain to allow it to work for current domain
+    // For Vercel: use SameSite=None with Secure for cross-origin, or SameSite=Lax for same-origin
+    // Try Lax first (works for same domain), fall back to None if needed
+    const useSameSiteNone = false // Set to true if cookies still don't work (requires Secure)
+    
     const cookieOptions = [
       `${cookieName}=${encodeURIComponent(userId)}`,
       'HttpOnly',
-      'SameSite=Lax',
+      useSameSiteNone ? 'SameSite=None' : 'SameSite=Lax',
       'Path=/',
       `Max-Age=${60 * 60 * 24 * 365}`, // 1 year
       ...(isProduction && isHttps ? ['Secure'] : [])
     ].join('; ')
     
-    // Set cookie header
+    // Set cookie header - ensure it's set before other headers
     res.setHeader('Set-Cookie', cookieOptions)
-    console.log('[cookie-utils] Created new user ID:', userId.substring(0, 20) + '...', 'Production:', isProduction, 'HTTPS:', isHttps, 'Cookie options:', cookieOptions.substring(0, 100) + '...')
+    
+    // Also set a response header to help debug
+    res.setHeader('X-Cookie-Set', 'true')
+    res.setHeader('X-User-ID', userId.substring(0, 20) + '...')
+    
+    console.log('[cookie-utils] Created new user ID:', userId.substring(0, 20) + '...', 'Production:', isProduction, 'HTTPS:', isHttps, 'SameSite:', useSameSiteNone ? 'None' : 'Lax')
   } else {
     console.log('[cookie-utils] Using existing user ID:', userId.substring(0, 20) + '...')
   }

@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDaily, useDevices } from '@daily-co/daily-react';
+import { useDaily, useDevices, useMeetingState } from '@daily-co/daily-react';
 
 export const useStartHaircheck = () => {
 	const daily = useDaily();
 	const { micState } = useDevices();
+	const meetingState = useMeetingState();
 
 	const [permissionState, setPermissionState] = useState(null);
 
@@ -28,19 +29,28 @@ export const useStartHaircheck = () => {
 
 	const requestPermissions = useCallback(() => {
 		if (!daily) return;
-		daily.startCamera({
-			startVideoOff: false,
-			startAudioOff: false,
-			audioSource: 'default',
-			inputSettings: {
-				audio: {
-					processor: {
-						type: 'noise-cancellation',
-					},
-				},
-			},
-		});
-	}, [daily]);
+		
+		// Don't start camera if already in a meeting - use setLocalVideo/setLocalAudio instead
+		if (meetingState === 'joined-meeting' || meetingState === 'joining-meeting') {
+			console.log('[useStartHaircheck] Already in meeting, skipping startCamera');
+			return;
+		}
+		
+		try {
+			daily.startCamera({
+				startVideoOff: false,
+				startAudioOff: false,
+				audioSource: 'default',
+			});
+		} catch (error) {
+			// Ignore errors about already being in a meeting
+			if (error.message && error.message.includes('not supported after joining')) {
+				console.log('[useStartHaircheck] Camera start not supported (already in meeting)');
+				return;
+			}
+			console.error('[useStartHaircheck] Failed to start camera:', error);
+		}
+	}, [daily, meetingState]);
 
 	const isPermissionsPrompt = useMemo(() => {
 		return permissionState === 'prompt';

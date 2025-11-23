@@ -145,6 +145,13 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	const replicaPresentProcessedRef = useRef(false);
 	const waitingForReplicaRef = useRef(false);
 	const replicaCheckIntervalRef = useRef(null);
+	const joinCallRef = useRef(null);
+	const isJoiningRef = useRef(false);
+
+	// Store joinCall in ref to avoid dependency issues
+	useEffect(() => {
+		joinCallRef.current = joinCall;
+	}, [joinCall]);
 
 	const recordUsageIfNeeded = useCallback(() => {
 		if (callStartTimeRef.current && !usageRecordedRef.current) {
@@ -533,12 +540,18 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	// 7. We wait for system.replica_present event to confirm replica is in the call
 	// 8. Only after replica is present do we consider participant "fully joined"
 	useEffect(() => {
-		if (conversationUrl && conversationId && shouldJoin && !hasJoinedRef.current) {
+		if (conversationUrl && conversationId && shouldJoin && !hasJoinedRef.current && !isJoiningRef.current) {
 			console.log('[Conversation] User clicked JOIN VIDEO CALL - checking if replica is ready before joining...');
 			waitingForReplicaRef.current = true;
+			isJoiningRef.current = true;
 			
 			// Check conversation status via Tavus API to verify replica is ready
 			const checkForReplica = async () => {
+				// Guard: prevent multiple join attempts
+				if (hasJoinedRef.current || !isJoiningRef.current) {
+					return;
+				}
+				
 				try {
 					const response = await fetch(`/api/check-conversation-status?conversationId=${encodeURIComponent(conversationId)}`, {
 						credentials: 'include'
@@ -547,6 +560,11 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 					if (response.ok) {
 						const data = await response.json();
 						if (data.hasReplica) {
+							// Guard: prevent multiple join attempts
+							if (hasJoinedRef.current || !isJoiningRef.current) {
+								return;
+							}
+							
 							console.log('[Conversation] Replica confirmed ready - joining call now');
 							// Clear polling interval
 							if (replicaCheckIntervalRef.current) {
@@ -554,8 +572,11 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 								replicaCheckIntervalRef.current = null;
 							}
 							waitingForReplicaRef.current = false;
-							// Now join the call
-							joinCall({ url: conversationUrl });
+							isJoiningRef.current = false;
+							// Now join the call using ref to avoid dependency issues
+							if (joinCallRef.current) {
+								joinCallRef.current({ url: conversationUrl });
+							}
 							hasJoinedRef.current = true;
 							hasUnmutedAfterJoinRef.current = false;
 							replicaPresentProcessedRef.current = false;
@@ -567,10 +588,13 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 						console.error('[Conversation] Failed to check conversation status:', response.status);
 						// Fallback: if we can't check status, assume replica is ready and join
 						// (replica should join automatically when conversation is created)
-						if (!replicaCheckIntervalRef.current) {
+						if (!replicaCheckIntervalRef.current && !hasJoinedRef.current && isJoiningRef.current) {
 							console.warn('[Conversation] Status check failed - assuming replica is ready and joining');
 							waitingForReplicaRef.current = false;
-							joinCall({ url: conversationUrl });
+							isJoiningRef.current = false;
+							if (joinCallRef.current) {
+								joinCallRef.current({ url: conversationUrl });
+							}
 							hasJoinedRef.current = true;
 							hasUnmutedAfterJoinRef.current = false;
 							replicaPresentProcessedRef.current = false;
@@ -580,10 +604,13 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 				} catch (error) {
 					console.error('[Conversation] Error checking conversation status:', error);
 					// Fallback: if error, assume replica is ready and join
-					if (!replicaCheckIntervalRef.current) {
+					if (!replicaCheckIntervalRef.current && !hasJoinedRef.current && isJoiningRef.current) {
 						console.warn('[Conversation] Status check error - assuming replica is ready and joining');
 						waitingForReplicaRef.current = false;
-						joinCall({ url: conversationUrl });
+						isJoiningRef.current = false;
+						if (joinCallRef.current) {
+							joinCallRef.current({ url: conversationUrl });
+						}
 						hasJoinedRef.current = true;
 						hasUnmutedAfterJoinRef.current = false;
 						replicaPresentProcessedRef.current = false;
@@ -599,13 +626,30 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 			let attempts = 0;
 			const maxAttempts = 20;
 			replicaCheckIntervalRef.current = setInterval(() => {
+				// Guard: stop polling if already joined
+				if (hasJoinedRef.current || !isJoiningRef.current) {
+					clearInterval(replicaCheckIntervalRef.current);
+					replicaCheckIntervalRef.current = null;
+					return;
+				}
+				
 				attempts++;
 				if (attempts >= maxAttempts) {
+					// Guard: prevent multiple join attempts
+					if (hasJoinedRef.current || !isJoiningRef.current) {
+						clearInterval(replicaCheckIntervalRef.current);
+						replicaCheckIntervalRef.current = null;
+						return;
+					}
+					
 					console.warn('[Conversation] Timeout waiting for replica - joining anyway (replica should join automatically)');
 					clearInterval(replicaCheckIntervalRef.current);
 					replicaCheckIntervalRef.current = null;
 					waitingForReplicaRef.current = false;
-					joinCall({ url: conversationUrl });
+					isJoiningRef.current = false;
+					if (joinCallRef.current) {
+						joinCallRef.current({ url: conversationUrl });
+					}
 					hasJoinedRef.current = true;
 					hasUnmutedAfterJoinRef.current = false;
 					replicaPresentProcessedRef.current = false;
@@ -622,6 +666,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 				replicaCheckIntervalRef.current = null;
 			}
 			hasJoinedRef.current = false;
+			isJoiningRef.current = false;
 			hasUnmutedAfterJoinRef.current = false;
 			replicaPresentProcessedRef.current = false;
 			waitingForReplicaRef.current = false;
@@ -639,7 +684,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 				replicaCheckIntervalRef.current = null;
 			}
 		};
-	}, [conversationUrl, shouldJoin, joinCall]);
+	}, [conversationUrl, conversationId, shouldJoin]);
 
 	// Mute participant for first 6 seconds after joining
 	useEffect(() => {

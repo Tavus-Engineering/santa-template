@@ -16,20 +16,41 @@ export const useCVICall = () => {
 				return;
 			}
 			
-			// Check if already in a meeting by checking if room exists
+			// Check meeting state first - most reliable way to check if we're in a meeting
+			const meetingState = daily.meetingState();
+			const isInMeeting = meetingState === 'joined-meeting' || meetingState === 'joining-meeting';
+			
+			// Also check room URL to see if we're in a different meeting
 			const currentRoom = daily.room();
-			if (currentRoom) {
-				console.log('[useCVICall] Already in meeting, leaving before joining new call');
+			const currentRoomUrl = currentRoom?.config?.url || currentRoom?.url || (currentRoom?.name ? `https://tavus.daily.co/${currentRoom.name}` : null);
+			const isInDifferentMeeting = isInMeeting && currentRoomUrl && currentRoomUrl !== url;
+			
+			if (isInDifferentMeeting || (isInMeeting && currentRoomUrl === url)) {
+				// If we're already in this exact meeting, don't try to join again
+				if (currentRoomUrl === url) {
+					console.log('[useCVICall] Already in this meeting, skipping join');
+					return;
+				}
+				
+				// If we're in a different meeting, leave first
+				console.log('[useCVICall] Already in different meeting, leaving before joining new call');
 				
 				let hasJoined = false;
+				let cleanupDone = false;
+				
+				const cleanup = () => {
+					if (cleanupDone) return;
+					cleanupDone = true;
+					daily.off('left-meeting', handleLeft);
+					daily.off('error', handleError);
+					if (timeoutId) clearTimeout(timeoutId);
+				};
 				
 				// Set up one-time listener for left-meeting event
 				const handleLeft = () => {
 					if (hasJoined) return;
 					hasJoined = true;
-					daily.off('left-meeting', handleLeft);
-					daily.off('error', handleError);
-					clearTimeout(timeoutId);
+					cleanup();
 					
 					// Now safe to join after a brief delay to ensure cleanup
 					setTimeout(() => {
@@ -47,15 +68,13 @@ export const useCVICall = () => {
 						} catch (error) {
 							console.error('[useCVICall] Error calling daily.join:', error);
 						}
-					}, 200);
+					}, 300);
 				};
 				
 				const handleError = (error) => {
 					if (hasJoined) return;
 					hasJoined = true;
-					daily.off('left-meeting', handleLeft);
-					daily.off('error', handleError);
-					clearTimeout(timeoutId);
+					cleanup();
 					console.error('[useCVICall] Error while leaving meeting:', error);
 					// Try to join anyway after error
 					setTimeout(() => {
@@ -73,15 +92,14 @@ export const useCVICall = () => {
 						} catch (joinError) {
 							console.error('[useCVICall] Error calling daily.join after error:', joinError);
 						}
-					}, 200);
+					}, 300);
 				};
 				
 				// Timeout fallback in case event doesn't fire
 				const timeoutId = setTimeout(() => {
 					if (hasJoined) return;
 					hasJoined = true;
-					daily.off('left-meeting', handleLeft);
-					daily.off('error', handleError);
+					cleanup();
 					console.warn('[useCVICall] Timeout waiting for left-meeting event, attempting to join anyway');
 					// Try to join after timeout
 					setTimeout(() => {
@@ -99,8 +117,8 @@ export const useCVICall = () => {
 						} catch (error) {
 							console.error('[useCVICall] Error calling daily.join after timeout:', error);
 						}
-					}, 200);
-				}, 3000); // 3 second timeout
+					}, 300);
+				}, 2000); // 2 second timeout
 				
 				daily.on('left-meeting', handleLeft);
 				daily.on('error', handleError);
@@ -110,6 +128,7 @@ export const useCVICall = () => {
 				return;
 			}
 			
+			// Not in a meeting, join directly
 			try {
 				daily.join({
 					url: url,
@@ -122,7 +141,31 @@ export const useCVICall = () => {
 					},
 				});
 			} catch (error) {
-				console.error('[useCVICall] Error calling daily.join:', error);
+				// If error is about already being in meeting, leave and retry
+				if (error.message && error.message.includes('already joined')) {
+					console.log('[useCVICall] Caught "already joined" error, leaving and retrying');
+					daily.leave();
+					
+					// Retry after leaving
+					setTimeout(() => {
+						try {
+							daily.join({
+								url: url,
+								inputSettings: {
+									audio: {
+										processor: {
+											type: "noise-cancellation",
+										},
+									},
+								},
+							});
+						} catch (retryError) {
+							console.error('[useCVICall] Error calling daily.join after retry:', retryError);
+						}
+					}, 500);
+				} else {
+					console.error('[useCVICall] Error calling daily.join:', error);
+				}
 			}
 		},
 		[daily]

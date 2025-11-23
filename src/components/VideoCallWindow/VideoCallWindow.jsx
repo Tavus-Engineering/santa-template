@@ -76,13 +76,29 @@ export const VideoCallWindow = ({
     if (isAnswered && !isHairCheckComplete && !timerIntervalRef.current) {
       // Fetch remaining time from usage API
       fetch('/api/check-usage', {
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       })
-        .then(res => res.json())
+        .then(res => {
+          // Check if Set-Cookie header is present (can't read HttpOnly cookies client-side, but we can see the header)
+          const setCookieHeader = res.headers.get('Set-Cookie')
+          const xCookieSet = res.headers.get('X-Cookie-Set')
+          const xUserId = res.headers.get('X-User-ID')
+          
+          console.log('[VideoCallWindow] check-usage response status:', res.status)
+          console.log('[VideoCallWindow] Cookie debug - Set-Cookie header present:', !!setCookieHeader, 'X-Cookie-Set:', xCookieSet, 'X-User-ID:', xUserId)
+          
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+          }
+          return res.json()
+        })
         .then(data => {
           const remainingSeconds = Math.max(0, data.remainingSeconds || 180)
           setCountdown(remainingSeconds)
-          console.log('[VideoCallWindow] Initialized timer during haircheck with remaining time:', remainingSeconds, 'seconds')
+          console.log('[VideoCallWindow] Initialized timer during haircheck with remaining time:', remainingSeconds, 'seconds', 'Used:', data.usedSeconds, 'Can start:', data.canStart)
           
           // Start countdown timer (only if not already running)
           if (!timerIntervalRef.current) {
