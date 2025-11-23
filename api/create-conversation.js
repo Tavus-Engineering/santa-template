@@ -93,8 +93,8 @@ export default async function handler(req, res) {
       // Get user identifier from cookie (generates new one if doesn't exist)
       const identifier = getOrCreateUserId(req, res)
       
-      const canStart = usageStorage.canStartSession(identifier)
-      const usage = usageStorage.getUsage(identifier)
+      const canStart = await usageStorage.canStartSession(identifier)
+      const usage = await usageStorage.getUsage(identifier)
       
       if (!canStart) {
         console.log('[create-conversation] Daily usage limit reached for:', identifier, 'Used:', usage.usedSeconds, 'seconds')

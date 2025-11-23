@@ -82,13 +82,21 @@ export const VideoCallWindow = ({
         }
       })
         .then(res => {
-          // Check if Set-Cookie header is present (can't read HttpOnly cookies client-side, but we can see the header)
+          // Check if Set-Cookie header is present (only sent when creating NEW cookie)
+          // If cookie already exists, Set-Cookie won't be in response - that's normal!
           const setCookieHeader = res.headers.get('Set-Cookie')
           const xCookieSet = res.headers.get('X-Cookie-Set')
           const xUserId = res.headers.get('X-User-ID')
           
           console.log('[VideoCallWindow] check-usage response status:', res.status)
-          console.log('[VideoCallWindow] Cookie debug - Set-Cookie header present:', !!setCookieHeader, 'X-Cookie-Set:', xCookieSet, 'X-User-ID:', xUserId)
+          
+          // Set-Cookie only appears when creating a NEW cookie
+          // If cookie already exists (which is normal), Set-Cookie won't be present
+          if (setCookieHeader || xCookieSet) {
+            console.log('[VideoCallWindow] New cookie created - Set-Cookie:', !!setCookieHeader, 'X-Cookie-Set:', xCookieSet, 'X-User-ID:', xUserId)
+          } else {
+            console.log('[VideoCallWindow] Using existing cookie (this is normal if you already have a cookie)')
+          }
           
           if (!res.ok) {
             throw new Error(`HTTP ${res.status}: ${res.statusText}`)

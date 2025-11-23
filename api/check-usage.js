@@ -42,19 +42,18 @@ export default async function handler(req, res) {
     // This ensures the cookie is set before res.json() is called
     const identifier = getOrCreateUserId(req, res)
     
-    const usage = usageStorage.getUsage(identifier)
-    const canStart = usageStorage.canStartSession(identifier)
+    const usage = await usageStorage.getUsage(identifier)
+    const canStart = await usageStorage.canStartSession(identifier)
     
     console.log('[check-usage] User:', identifier.substring(0, 20) + '...', 'Used:', usage.usedSeconds, 'Remaining:', usage.remainingSeconds, 'Can start:', canStart)
     
-    // Ensure cookie headers are set before sending response
-    // The cookie should already be set by getOrCreateUserId, but we'll verify
+    // Note: Set-Cookie header is only sent when creating a NEW cookie
+    // If cookie already exists (normal case), Set-Cookie won't be in response - that's expected!
     const setCookieHeader = res.getHeader('Set-Cookie')
     if (setCookieHeader) {
-      console.log('[check-usage] Cookie is being set:', typeof setCookieHeader === 'string' ? setCookieHeader.substring(0, 50) + '...' : 'present')
-    } else {
-      console.warn('[check-usage] WARNING: Set-Cookie header not found in response!')
+      console.log('[check-usage] New cookie created:', typeof setCookieHeader === 'string' ? setCookieHeader.substring(0, 50) + '...' : 'present')
     }
+    // No warning needed - cookie exists and is working correctly
     
     return res.status(200).json({
       canStart,

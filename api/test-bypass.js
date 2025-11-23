@@ -70,7 +70,7 @@ export default async function handler(req, res) {
         clearedCount: cleared
       })
     } else if (action === 'status') {
-      const usage = usageStorage.getUsage(userIdentifier)
+      const usage = await usageStorage.getUsage(userIdentifier)
       return res.status(200).json({
         identifier: userIdentifier,
         ...usage,

@@ -13,23 +13,23 @@ export function getOrCreateUserId(req, res) {
   try {
     if (req.headers.cookie) {
       cookies = req.headers.cookie.split(';').reduce((acc, cookie) => {
-        const trimmed = cookie.trim()
+    const trimmed = cookie.trim()
         if (!trimmed) return acc
         
-        const equalIndex = trimmed.indexOf('=')
-        if (equalIndex > 0) {
+    const equalIndex = trimmed.indexOf('=')
+    if (equalIndex > 0) {
           const key = trimmed.substring(0, equalIndex).trim()
           const value = trimmed.substring(equalIndex + 1).trim()
-          if (key && value) {
+      if (key && value) {
             try {
-              acc[key] = decodeURIComponent(value)
+        acc[key] = decodeURIComponent(value)
             } catch (e) {
               // If decoding fails, use raw value
               acc[key] = value
             }
-          }
-        }
-        return acc
+      }
+    }
+    return acc
       }, {})
     }
   } catch (error) {
@@ -84,7 +84,7 @@ export function getOrCreateUserId(req, res) {
     // Set cookie header - MUST be set before res.json() is called
     // Use appendHeader to ensure it's added even if other headers exist
     try {
-      res.setHeader('Set-Cookie', cookieOptions)
+    res.setHeader('Set-Cookie', cookieOptions)
       
       // Also set a response header to help debug
       res.setHeader('X-Cookie-Set', 'true')

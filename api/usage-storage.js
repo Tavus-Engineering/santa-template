@@ -1,66 +1,27 @@
-// Simple in-memory storage for daily usage tracking
-// In production, replace with Vercel KV, Redis, or a database
-// For local dev, we use a file-based cache to persist across function invocations
+// Usage storage with Vercel KV for persistence
+// Falls back to in-memory storage if KV is not configured
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
+let kv = null;
+let kvInitialized = false;
 
-const CACHE_FILE = join('/tmp', 'santa-usage-cache.json');
-
-// Load from file cache if it exists
-function loadCache() {
+async function initKV() {
+  if (kvInitialized) return kv;
+  kvInitialized = true;
+  
   try {
-    if (existsSync(CACHE_FILE)) {
-      const data = readFileSync(CACHE_FILE, 'utf8');
-      const entries = JSON.parse(data);
-      return new Map(entries);
-    }
+    const kvModule = await import('@vercel/kv');
+    kv = kvModule.kv;
+    console.log('[usage-storage] Vercel KV initialized');
   } catch (error) {
-    console.warn('[usage-storage] Failed to load cache:', error.message);
-  }
-  return new Map();
-}
-
-// Save to file cache
-function saveCache(map) {
-  try {
-    const entries = Array.from(map.entries());
-    const data = JSON.stringify(entries);
-    writeFileSync(CACHE_FILE, data, 'utf8');
-  } catch (error) {
-    console.warn('[usage-storage] Failed to save cache:', error.message);
-  }
-}
-
-// Create a Map with file persistence
-class PersistentMap extends Map {
-  set(key, value) {
-    const result = super.set(key, value);
-    saveCache(this);
-    return result;
+    console.warn('[usage-storage] Vercel KV not available, using in-memory storage (data will not persist):', error.message);
+    kv = null;
   }
   
-  delete(key) {
-    const result = super.delete(key);
-    saveCache(this);
-    return result;
-  }
-  
-  clear() {
-    super.clear();
-    saveCache(this);
-  }
+  return kv;
 }
 
-// Use global Map with file persistence
-// Check if global already exists, otherwise create new one and load from cache
-let usageStore;
-if (global.usageStore) {
-  usageStore = global.usageStore;
-} else {
-  usageStore = new PersistentMap(loadCache());
-  global.usageStore = usageStore;
-}
+// In-memory fallback for local dev or if KV is not configured
+let memoryStore = new Map();
 
 export const MAX_DAILY_SECONDS = 180; // 3 minutes
 
@@ -69,51 +30,83 @@ function getTodayKey(identifier) {
   return `${identifier}:${today}`;
 }
 
-function syncFromFile() {
-  const cached = loadCache();
-  for (const [key, value] of cached) {
-    if (!usageStore.has(key)) {
-      usageStore.set(key, value);
-    } else {
-      // Merge if file has newer data (higher usedSeconds means more recent)
-      const memUsage = usageStore.get(key);
-      if (value.usedSeconds > memUsage.usedSeconds) {
-        usageStore.set(key, value);
-      }
-    }
+async function getUsageFromKV(key) {
+  if (!kv) return null;
+  try {
+    const data = await kv.get(key);
+    return data ? JSON.parse(data) : null;
+  } catch (error) {
+    console.warn('[usage-storage] Failed to get from KV:', error.message);
+    return null;
   }
 }
 
-export function getUsage(identifier) {
-  syncFromFile(); // Always sync from file first
+async function setUsageInKV(key, value) {
+  if (!kv) return false;
+  try {
+    await kv.set(key, JSON.stringify(value));
+    return true;
+  } catch (error) {
+    console.warn('[usage-storage] Failed to set in KV:', error.message);
+    return false;
+  }
+}
+
+export async function getUsage(identifier) {
+  await initKV(); // Initialize KV if not already done
   const key = getTodayKey(identifier);
-  const usage = usageStore.get(key) || { usedSeconds: 0, sessions: [] };
+  
+  let usage;
+  if (kv) {
+    // Use Vercel KV
+    usage = await getUsageFromKV(key);
+    if (!usage) {
+      usage = { usedSeconds: 0, sessions: [] };
+    }
+  } else {
+    // Fallback to in-memory
+    usage = memoryStore.get(key) || { usedSeconds: 0, sessions: [] };
+  }
+  
   const result = {
     usedSeconds: usage.usedSeconds,
     remainingSeconds: Math.max(0, MAX_DAILY_SECONDS - usage.usedSeconds),
     sessions: usage.sessions || []
   };
-  console.log('[usage-storage] getUsage - Key:', key, 'Store size:', usageStore.size, 'Usage:', result);
+  
+  const storeType = kv ? 'KV' : 'memory';
+  console.log('[usage-storage] getUsage - Key:', key, 'Store:', storeType, 'Usage:', result);
   return result;
 }
 
-export function canStartSession(identifier) {
-  const usage = getUsage(identifier);
+export async function canStartSession(identifier) {
+  const usage = await getUsage(identifier);
   return usage.remainingSeconds > 0;
 }
 
-export function getRemainingTime(identifier) {
-  const usage = getUsage(identifier);
+export async function getRemainingTime(identifier) {
+  const usage = await getUsage(identifier);
   return usage.remainingSeconds;
 }
 
-export function recordSession(identifier, durationSeconds) {
-  syncFromFile(); // Always sync from file first
+export async function recordSession(identifier, durationSeconds) {
+  await initKV(); // Initialize KV if not already done
   const key = getTodayKey(identifier);
-  const existingUsage = usageStore.get(key);
-  const usage = existingUsage || { usedSeconds: 0, sessions: [] };
   
-  console.log('[usage-storage] recordSession - Key:', key, 'Before - Used:', usage.usedSeconds, 'Store size:', usageStore.size);
+  // Get existing usage
+  let usage;
+  if (kv) {
+    usage = await getUsageFromKV(key);
+  } else {
+    usage = memoryStore.get(key);
+  }
+  
+  if (!usage) {
+    usage = { usedSeconds: 0, sessions: [] };
+  }
+  
+  const storeType = kv ? 'KV' : 'memory';
+  console.log('[usage-storage] recordSession - Key:', key, 'Before - Used:', usage.usedSeconds, 'Store:', storeType);
   
   // Calculate remaining seconds from used seconds
   const remainingSeconds = Math.max(0, MAX_DAILY_SECONDS - usage.usedSeconds);
@@ -125,21 +118,25 @@ export function recordSession(identifier, durationSeconds) {
     timestamp: new Date().toISOString()
   });
   
-  usageStore.set(key, usage); // This will save to file automatically
+  // Save updated usage
+  if (kv) {
+    await setUsageInKV(key, usage);
+  } else {
+    memoryStore.set(key, usage);
+  }
   
   const result = {
     usedSeconds: usage.usedSeconds,
     remainingSeconds: Math.max(0, MAX_DAILY_SECONDS - usage.usedSeconds)
   };
   
-  console.log('[usage-storage] recordSession - After - Used:', result.usedSeconds, 'Remaining:', result.remainingSeconds, 'Store size:', usageStore.size);
+  console.log('[usage-storage] recordSession - After - Used:', result.usedSeconds, 'Remaining:', result.remainingSeconds, 'Store:', storeType);
   
   return result;
 }
 
-export function reserveTime(identifier, requestedSeconds) {
-  const key = getTodayKey(identifier);
-  const usage = usageStore.get(key) || { usedSeconds: 0, sessions: [] };
+export async function reserveTime(identifier, requestedSeconds) {
+  const usage = await getUsage(identifier);
   const remaining = Math.max(0, MAX_DAILY_SECONDS - usage.usedSeconds);
   const reserved = Math.min(requestedSeconds, remaining);
   
@@ -148,24 +145,4 @@ export function reserveTime(identifier, requestedSeconds) {
     remainingSeconds: remaining - reserved
   };
 }
-
-// Export usageStore for test bypass
-export { usageStore };
-
-// Clean up old entries (older than 2 days) to prevent memory leaks
-function cleanup() {
-  const twoDaysAgo = new Date();
-  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-  const cutoffDate = twoDaysAgo.toISOString().split('T')[0];
-  
-  for (const [key] of usageStore) {
-    const date = key.split(':')[1];
-    if (date < cutoffDate) {
-      usageStore.delete(key);
-    }
-  }
-}
-
-// Run cleanup every hour
-setInterval(cleanup, 60 * 60 * 1000);
 

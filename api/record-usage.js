@@ -46,7 +46,7 @@ export default async function handler(req, res) {
     
     console.log('[record-usage] Recording session for user:', identifier.substring(0, 20) + '...', 'Duration:', durationSeconds, 'seconds')
     
-    const result = usageStorage.recordSession(identifier, durationSeconds)
+    const result = await usageStorage.recordSession(identifier, durationSeconds)
     
     console.log('[record-usage] Session recorded - Used:', result.usedSeconds, 'Remaining:', result.remainingSeconds)
     
