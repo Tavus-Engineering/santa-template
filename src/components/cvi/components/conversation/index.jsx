@@ -115,7 +115,7 @@ const MainVideo = React.memo(() => {
 	);
 });
 
-export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, conversationId, selectedLanguage = 'en' }, ref) => {
+export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, conversationId, selectedLanguage = 'en', shouldJoin = false }, ref) => {
 	const { joinCall, leaveCall, onAppMessage, sendAppMessage } = useCVICall();
 	const meetingState = useMeetingState();
 	const { hasMicError, microphones, cameras, currentMic, currentCam, setMicrophone, setCamera } = useDevices();
@@ -126,6 +126,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	const [showMicDropdown, setShowMicDropdown] = useState(false);
 	const [showVideoDropdown, setShowVideoDropdown] = useState(false);
 	const [isToolbarVisible, setIsToolbarVisible] = useState(true);
+	const [isReplicaPresent, setIsReplicaPresent] = useState(false);
 	const micDropdownRef = useRef(null);
 	const videoDropdownRef = useRef(null);
 	const scoreContextSentRef = useRef(false);
@@ -136,6 +137,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	const timeCheck60sPendingRef = useRef(false);
 	const callStartTimeRef = useRef(null);
 	const usageRecordedRef = useRef(false);
+	const hasJoinedRef = useRef(false);
 
 	const handleLeave = useCallback(() => {
 		leaveCall();
@@ -148,8 +150,9 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	}), [handleLeave]);
 
 	// Fetch remaining time and initialize countdown timer
+	// Only start timer when both participant has joined AND replica is present
 	useEffect(() => {
-		if (meetingState === 'joined-meeting') {
+		if (meetingState === 'joined-meeting' && isReplicaPresent) {
 			// Fetch remaining time from usage API
 			fetch('/api/check-usage')
 				.then(res => res.json())
@@ -191,19 +194,19 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 		} else {
 			setCountdown(180);
 		}
-	}, [meetingState]);
+	}, [meetingState, isReplicaPresent]);
 
 	// Automatically end call when countdown reaches 0
 	useEffect(() => {
-		if (countdown === 0 && meetingState === 'joined-meeting') {
+		if (countdown === 0 && meetingState === 'joined-meeting' && isReplicaPresent) {
 			console.log('[Conversation] Countdown reached 0, ending call');
 			handleLeave();
 		}
-	}, [countdown, meetingState, handleLeave]);
+	}, [countdown, meetingState, isReplicaPresent, handleLeave]);
 
 	// Send time check utterance event at 60 seconds (or when 60 seconds remain)
 	useEffect(() => {
-		if (!sendAppMessage || !conversationId || meetingState !== 'joined-meeting') {
+		if (!sendAppMessage || !conversationId || meetingState !== 'joined-meeting' || !isReplicaPresent) {
 			return;
 		}
 
@@ -230,11 +233,11 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 				console.log('[Conversation] Time check utterance sent at 60 seconds');
 			}
 		}
-	}, [countdown, sendAppMessage, conversationId, meetingState]);
+	}, [countdown, sendAppMessage, conversationId, meetingState, isReplicaPresent]);
 
 	// Echo interactions at 5s
 	useEffect(() => {
-		if (!sendAppMessage || !conversationId || meetingState !== 'joined-meeting') {
+		if (!sendAppMessage || !conversationId || meetingState !== 'joined-meeting' || !isReplicaPresent) {
 			return;
 		}
 
@@ -257,7 +260,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 			// Rotate to next message for next conversation
 			echo5sIndexRef.current = (echo5sIndexRef.current + 1) % messages5s.length;
 		}
-	}, [countdown, sendAppMessage, conversationId, meetingState, selectedLanguage]);
+	}, [countdown, sendAppMessage, conversationId, meetingState, selectedLanguage, isReplicaPresent]);
 
 	// Listen for Tavus CVI events to process AI responses
 	// The processMessage function extracts score tags (<+> and <->) from text
@@ -317,26 +320,31 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 				eventType === 'conversation.utterance';
 
 
-			// Send score context when replica is present (once per conversation)
-			if (eventType === 'system.replica_present' && !scoreContextSentRef.current && conversationId) {
-				try {
-					const scoreContext = getCurrentScoreContext('user', 'santa-call', currentScore);
+			// Replica is present - mark it and send score context (once per conversation)
+			if (eventType === 'system.replica_present') {
+				console.log('[Conversation] Replica is present - participant can now be considered fully joined');
+				setIsReplicaPresent(true);
+				
+				if (!scoreContextSentRef.current && conversationId) {
+					try {
+						const scoreContext = getCurrentScoreContext('user', 'santa-call', currentScore);
 
-					if (sendAppMessage) {
-						sendAppMessage({
-							message_type: "conversation",
-							event_type: "conversation.respond",
-							conversation_id: conversationId,
-							properties: {
-								text: scoreContext,
-							},
-						});
-						scoreContextSentRef.current = true;
-					} else {
-						console.error('[Conversation] sendAppMessage is not available!');
+						if (sendAppMessage) {
+							sendAppMessage({
+								message_type: "conversation",
+								event_type: "conversation.respond",
+								conversation_id: conversationId,
+								properties: {
+									text: scoreContext,
+								},
+							});
+							scoreContextSentRef.current = true;
+						} else {
+							console.error('[Conversation] sendAppMessage is not available!');
+						}
+					} catch (error) {
+						console.error('[Conversation] Error sending score context:', error);
 					}
-				} catch (error) {
-					console.error('[Conversation] Error sending score context:', error);
 				}
 			}
 
@@ -379,7 +387,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 				unsubscribe();
 			}
 		};
-	}, [onAppMessage, sendAppMessage, conversationId, processMessage]);
+	}, [onAppMessage, sendAppMessage, conversationId, processMessage, currentScore]);
 
 	// Close dropdowns when clicking outside
 	useEffect(() => {
@@ -434,20 +442,39 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	useEffect(() => {
 		if (meetingState === 'error') {
 			console.error('[Conversation] Meeting state is error, calling onLeave');
+			setIsReplicaPresent(false);
+			hasJoinedRef.current = false;
 			onLeave();
 		}
 		// Detect when call ends
 		if (meetingState === 'left-meeting' || meetingState === 'ended') {
+			setIsReplicaPresent(false);
+			hasJoinedRef.current = false;
 			onLeave();
 		}
 	}, [meetingState, onLeave]);
 
-	// Initialize call when conversation is available
+	// Initialize call when conversation is available AND shouldJoin is true
+	// Flow: 
+	// 1. Conversation is created (replica joins automatically on Tavus side)
+	// 2. User goes through hair check
+	// 3. User clicks "JOIN VIDEO CALL" → shouldJoin becomes true
+	// 4. Participant joins the call (daily.join)
+	// 5. We wait for system.replica_present event to confirm replica is in the call
+	// 6. Only after replica is present do we consider participant "fully joined"
+	// 7. Greeting fires when participant joins (controlled by Tavus)
 	useEffect(() => {
-		if (conversationUrl) {
+		if (conversationUrl && shouldJoin && !hasJoinedRef.current) {
+			console.log('[Conversation] Joining call - user clicked JOIN VIDEO CALL button');
 			joinCall({ url: conversationUrl });
+			hasJoinedRef.current = true;
+			// Reset replica present state when joining new call
+			setIsReplicaPresent(false);
+		} else if (!shouldJoin || !conversationUrl) {
+			// Reset join flag if shouldJoin becomes false (e.g., call ended/cancelled) or conversationUrl changes
+			hasJoinedRef.current = false;
 		}
-	}, [conversationUrl, joinCall]);
+	}, [conversationUrl, shouldJoin, joinCall]);
 
 	const handleVideoContainerClick = () => {
 		setIsToolbarVisible(prev => !prev);

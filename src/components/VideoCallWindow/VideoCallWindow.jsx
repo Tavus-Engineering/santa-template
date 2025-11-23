@@ -147,6 +147,7 @@ export const VideoCallWindow = ({
                       conversationId={conversationId}
                       onLeave={handleConversationLeave}
                       selectedLanguage={selectedLanguage}
+                      shouldJoin={isHairCheckComplete}
                     />
                   </>
                 ) : (
