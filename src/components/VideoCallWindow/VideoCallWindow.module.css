@@ -34,7 +34,7 @@
   padding: 6px 16px;
   background: #EAE5DE;
   border-bottom: 1px solid #D0D0D0;
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
@@ -293,7 +293,7 @@
 }
 
 .haircheckContainer :global(.sidebar-description) {
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 14px;
   color: #EAE5DE;
   line-height: 1.6;
@@ -310,7 +310,7 @@
   padding: 12px 16px;
   background: #1E3A5F;
   border-radius: 0;
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 12px;
   color: #EAE5DE;
   width: 100%;

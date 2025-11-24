@@ -148,7 +148,7 @@
 
 .timerText {
 	color: #4A4A4A;
-	font-family: 'FK Raster Grotesk Compact', sans-serif;
+	font-family: 'Berkeley Mono', sans-serif;
 	font-size: 14px;
 	font-weight: 600;
 	letter-spacing: 0.5px;
@@ -176,7 +176,7 @@
 	border-right: 1px solid #4A4A4A;
 	border-radius: 0;
 	color: #4A4A4A;
-	font-family: 'FK Raster Grotesk Compact', sans-serif;
+	font-family: 'Berkeley Mono', sans-serif;
 	font-size: 12px;
 	cursor: pointer;
 	white-space: nowrap;
@@ -281,7 +281,7 @@
 	border-bottom: 1px solid #4A4A4A;
 	border-radius: 0;
 	color: #2C2C2C;
-	font-family: 'FK Raster Grotesk Compact', sans-serif;
+	font-family: 'Berkeley Mono', sans-serif;
 	font-size: 12px;
 	text-align: left;
 	cursor: pointer;
@@ -475,7 +475,7 @@
 	position: relative;
 	z-index: 2;
 	color: #EAE5DE;
-	font-family: 'FK Raster Grotesk Compact', sans-serif;
+	font-family: 'Berkeley Mono', sans-serif;
 	font-size: 18px;
 	text-align: center;
 	margin: 0;

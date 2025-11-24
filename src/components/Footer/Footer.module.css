@@ -68,7 +68,7 @@
 }
 
 .greyFooterCountdownTitle {
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 12px;
   font-weight: 600;
   color: #2C2C2C;
@@ -96,7 +96,7 @@
 }
 
 .countdownNumber {
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 18px;
   font-weight: 600;
   color: #2C2C2C;
@@ -108,7 +108,7 @@
 }
 
 .countdownLabel {
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 9px;
   font-weight: 500;
   color: #2C2C2C;

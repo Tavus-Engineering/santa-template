@@ -16,7 +16,7 @@
   border: 0.5px solid #4A4A4A;
   border-radius: 0;
   cursor: pointer;
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 11px;
   font-weight: 500;
   color: #2C2C2C;
@@ -89,7 +89,7 @@
   background: #F5F0E9;
   border: 0.5px solid #4A4A4A;
   border-radius: 0;
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 11px;
   color: #2C2C2C;
   box-sizing: border-box;
@@ -143,7 +143,7 @@
   border: none;
   border-bottom: 0.5px solid #4A4A4A;
   cursor: pointer;
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 11px;
   color: #2C2C2C;
   transition: background 0.2s ease;
@@ -171,7 +171,7 @@
 .noResults {
   padding: 16px;
   text-align: center;
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 11px;
   color: #8A8A8A;
 }

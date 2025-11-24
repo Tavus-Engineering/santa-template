@@ -14,7 +14,7 @@
 }
 
 .mobileCountdownTitle {
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 10px;
   font-weight: 600;
   color: #2C2C2C;
@@ -42,7 +42,7 @@
 }
 
 .mobileCountdownNumber {
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 16px;
   font-weight: 600;
   color: #2C2C2C;
@@ -54,7 +54,7 @@
 }
 
 .mobileCountdownLabel {
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 8px;
   font-weight: 500;
   color: #2C2C2C;

@@ -611,7 +611,7 @@ const FlappySanta = ({ selectedLanguage = 'en' }) => {
           top: '20px',
           left: '50%',
           transform: 'translateX(-50%)',
-          fontFamily: "'FK Raster Grotesk Compact', sans-serif",
+          fontFamily: "'Berkeley Mono', sans-serif",
           fontSize: '48px',
           fontWeight: 'bold',
           color: '#EAE5DE',
@@ -663,7 +663,7 @@ const FlappySanta = ({ selectedLanguage = 'en' }) => {
           />
           <div
             style={{
-              fontFamily: "'FK Raster Grotesk Compact', sans-serif",
+              fontFamily: "'Berkeley Mono', sans-serif",
               fontSize: '32px',
               fontWeight: 'bold',
               color: '#EAE5DE',
@@ -676,7 +676,7 @@ const FlappySanta = ({ selectedLanguage = 'en' }) => {
           {gameOver && (
             <div
               style={{
-                fontFamily: "'FK Raster Grotesk Compact', sans-serif",
+                fontFamily: "'Berkeley Mono', sans-serif",
                 fontSize: '18px',
                 color: '#EAE5DE',
                 textAlign: 'center',
@@ -692,7 +692,7 @@ const FlappySanta = ({ selectedLanguage = 'en' }) => {
           )}
           <div
             style={{
-              fontFamily: "'FK Raster Grotesk Compact', sans-serif",
+              fontFamily: "'Berkeley Mono', sans-serif",
               fontSize: '16px',
               color: '#EAE5DE',
               textAlign: 'center'
