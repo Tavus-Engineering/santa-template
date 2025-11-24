@@ -101,49 +101,7 @@
 
 @media (max-width: 768px) {
   .greyFooter {
-    padding: 0 20px;
-    padding-bottom: calc(20px + env(safe-area-inset-bottom));
-    height: auto;
-    min-height: 60px;
-    bottom: 0;
-  }
-
-  .greyFooterContent {
-    flex-direction: column;
-    gap: 12px;
-    padding: 12px 0;
-  }
-
-  .greyFooterLeft {
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-  }
-
-  .greyFooterLogo {
-    max-height: 30px;
-  }
-
-  .greyFooterCountdown {
-    padding: 6px 12px;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .greyFooterCountdownTitle {
-    font-size: 10px;
-  }
-
-  .countdownItems {
-    gap: 10px;
-  }
-
-  .countdownNumber {
-    font-size: 14px;
-  }
-
-  .countdownLabel {
-    font-size: 7px;
+    display: none;
   }
 }
 

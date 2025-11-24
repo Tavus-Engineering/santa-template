@@ -2,7 +2,7 @@
 export const translations = {
   en: {
     // Hero
-    heroMeet: 'meet ai Santa',
+    heroMeet: 'Meet AI Santa',
     
     // Footer
     christmasCountdown: 'CHRISTMAS COUNTDOWN',

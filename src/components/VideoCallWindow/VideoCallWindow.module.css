@@ -419,7 +419,8 @@
     aspect-ratio: 1 / 1;
   }
 
-  .windowAnswered {
+  .windowAnswered,
+  .mobileFullscreen {
     max-width: 100%;
     width: 100vw;
     height: 100vh;

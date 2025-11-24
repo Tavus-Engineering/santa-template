@@ -20,7 +20,7 @@ const JoinBtn = ({ onClick, disabled, className, loading, loadingText, t }) => {
 				<img
 					src="/icons/video.png"
 					alt="Video"
-					style={{ width: '16px', height: '16px', objectFit: 'contain', flexShrink: 0 }}
+					style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }}
 				/>
 				<span>{loading ? (loadingText || t('dialingToNorthPole')) : t('joinVideoCall')}</span>
 			</div>

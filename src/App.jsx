@@ -10,6 +10,8 @@ import { Background } from './components/Background/Background'
 import { Header } from './components/Header/Header'
 import { HeroText } from './components/HeroText/HeroText'
 import { Footer } from './components/Footer/Footer'
+import { MobileCountdown } from './components/MobileCountdown/MobileCountdown'
+import { MobilePowered } from './components/MobilePowered/MobilePowered'
 import { WindowIcon } from './components/WindowIcon/WindowIcon'
 import { VideoCallWindow } from './components/VideoCallWindow/VideoCallWindow'
 import { FlappyWindow } from './components/FlappyWindow/FlappyWindow'
@@ -66,6 +68,11 @@ function App() {
       
       <Header />
       
+      <MobileCountdown 
+        selectedLanguage={selectedLanguage} 
+        isWindowOpen={!isMinimized || !isFlappyMinimized}
+      />
+      
       <HeroText selectedLanguage={selectedLanguage} />
 
       <Footer 
@@ -73,6 +80,8 @@ function App() {
         onLanguageChange={setSelectedLanguage}
         isDisabled={isHairCheckComplete && !isCallEnded}
       />
+
+      <MobilePowered isWindowOpen={!isMinimized || !isFlappyMinimized} />
 
       <main className="main-content">
         <WindowIcon

@@ -11,37 +11,38 @@ export const calculateDesktopPosition = (mainContentRect, windowWidth, windowHei
 }
 
 /**
- * Calculate mobile position between hero text and icons
+ * Calculate mobile position below hero text, extending to cover icons but stopping above powered image
  */
-export const calculateMobilePosition = (heroText, iconsTop, windowWidth, windowHeight) => {
+export const calculateMobilePosition = (heroText, iconsTop, windowWidth, windowHeight = null) => {
   let textBottom = 0
   if (heroText) {
     const textRect = heroText.getBoundingClientRect()
-    textBottom = textRect.bottom + 20 // Small gap from text
+    textBottom = textRect.bottom + 60 // Even larger gap from text to ensure it doesn't cover hero text
   } else {
     // Fallback: estimate text height
-    textBottom = window.innerHeight * 0.20
+    textBottom = window.innerHeight * 0.35
   }
 
-  // Icons are at bottom: 140px, plus icon height (~120px) = ~260px from bottom
-  const calculatedIconsTop = iconsTop || (window.innerHeight - 260)
+  // Powered image is at bottom: 30px, with padding 30px and image height ~30px = ~90px from bottom
+  // Leave some extra space, so stop at ~100px from bottom
+  const poweredImageSpace = 100
+  const endY = window.innerHeight - poweredImageSpace
 
-  // Available space between text and icons
-  const availableHeight = calculatedIconsTop - textBottom
-  const padding = 20 // Padding on both sides for spacing
+  // Available height from hero text to above powered image
+  const availableHeight = endY - textBottom
 
   // Ensure we have enough space
   if (availableHeight > 100) {
-    // Center the window vertically between hero text and icons
-    const centerY = textBottom + (availableHeight / 2)
-    const finalY = centerY - (windowHeight / 2) // Center the window
+    // Position window starting right below hero text
+    // Window will extend down to cover icons and stop above powered image
+    const finalY = textBottom
 
     return {
       x: (window.innerWidth - windowWidth) / 2,
       y: finalY,
       windowSize: {
         width: windowWidth,
-        height: windowHeight
+        height: availableHeight - 10 // Use available height minus small padding
       }
     }
   }
