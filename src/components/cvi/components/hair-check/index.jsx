@@ -118,7 +118,7 @@ export const HairCheck = memo(({ isJoinBtnLoading = false, onJoin, onCancel, con
 									setShowMicDropdown(!showMicDropdown);
 									setShowVideoDropdown(false);
 								}}
-							>↑</span>
+							>{showMicDropdown ? '▼' : '▲'}</span>
 						</button>
 						{showMicDropdown && microphones && microphones.length > 0 && (
 							<div className={styles.dropdown}>
@@ -160,7 +160,7 @@ export const HairCheck = memo(({ isJoinBtnLoading = false, onJoin, onCancel, con
 									setShowVideoDropdown(!showVideoDropdown);
 									setShowMicDropdown(false);
 								}}
-							>↑</span>
+							>{showVideoDropdown ? '▼' : '▲'}</span>
 						</button>
 						{showVideoDropdown && cameras && cameras.length > 0 && (
 							<div className={styles.dropdown}>

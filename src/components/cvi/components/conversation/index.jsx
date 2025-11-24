@@ -789,7 +789,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 									setShowMicDropdown(!showMicDropdown);
 									setShowVideoDropdown(false);
 								}}
-							>↑</span>
+							>{showMicDropdown ? '▼' : '▲'}</span>
 						</button>
 						{showMicDropdown && microphones && microphones.length > 0 && (
 							<div className={styles.deviceDropdown}>
@@ -837,7 +837,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 									setShowVideoDropdown(!showVideoDropdown);
 									setShowMicDropdown(false);
 								}}
-							>↑</span>
+							>{showVideoDropdown ? '▼' : '▲'}</span>
 						</button>
 						{showVideoDropdown && cameras && cameras.length > 0 && (
 							<div className={styles.deviceDropdown}>
