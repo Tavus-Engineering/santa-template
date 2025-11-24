@@ -26,6 +26,12 @@ const LANGUAGE_OPTIONS = [
   { code: 'ar', name: 'Arabic' },
   { code: 'cs', name: 'Czech' },
   { code: 'el', name: 'Greek' },
+  { code: 'fi', name: 'Finnish' },
+  { code: 'hr', name: 'Croatian' },
+  { code: 'ms', name: 'Malay' },
+  { code: 'sk', name: 'Slovak' },
+  { code: 'da', name: 'Danish' },
+  { code: 'ta', name: 'Tamil' },
 ]
 
 export const LanguageSelector = ({ selectedLanguage, onLanguageChange, disabled = false }) => {
