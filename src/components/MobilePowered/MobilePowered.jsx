@@ -12,7 +12,7 @@ export const MobilePowered = ({ isWindowOpen = false }) => {
       >
         <img 
           src={ASSET_PATHS.images.powered} 
-          alt="Powered by TAVUS" 
+          alt="Powered by Tavus" 
         />
       </a>
     </div>

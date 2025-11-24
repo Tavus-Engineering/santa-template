@@ -20,7 +20,7 @@ export const Footer = ({ selectedLanguage, onLanguageChange, isDisabled = false,
           >
             <img 
               src={ASSET_PATHS.images.footerLogo} 
-              alt="Powered by TAVUS" 
+              alt="Powered by Tavus" 
             />
           </a>
           {!hideLanguageSelector && (
