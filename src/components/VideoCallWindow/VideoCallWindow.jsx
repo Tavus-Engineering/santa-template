@@ -32,7 +32,7 @@ export const VideoCallWindow = ({
   const [isReplicaReady, setIsReplicaReady] = useState(false)
   const t = useTranslation(selectedLanguage)
 
-  const { position, windowSize, isDragging, handleMouseDown, shouldBeFullscreen } = useWindowPosition({
+  const { position, windowSize, isDragging, handleDragStart, shouldBeFullscreen } = useWindowPosition({
     isLoading,
     isMinimized,
     isAnswered,
@@ -212,7 +212,8 @@ export const VideoCallWindow = ({
     >
       <div 
         className={styles.windowTitleBar}
-        onMouseDown={handleMouseDown}
+        onMouseDown={handleDragStart}
+        onTouchStart={handleDragStart}
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
         <div className={styles.titleBarLeft}>

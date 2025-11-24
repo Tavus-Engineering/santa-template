@@ -194,29 +194,58 @@ export const useWindowPosition = ({
     }
   }, [isAnswered, isMinimized])
 
-  // Handle mouse down for dragging
-  const handleMouseDown = (e) => {
+  // Helper function to extract coordinates from mouse or touch events
+  const getEventCoordinates = (e) => {
+    if (e.touches && e.touches.length > 0) {
+      // Touch event
+      return {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      }
+    }
+    // Mouse event
+    return {
+      x: e.clientX,
+      y: e.clientY
+    }
+  }
+
+  // Handle drag start (mouse or touch)
+  const handleDragStart = (e) => {
     if (windowRef.current) {
+      // Prevent default to avoid scrolling on touch devices
+      if (e.type === 'touchstart') {
+        e.preventDefault()
+      }
+      
       const rect = windowRef.current.getBoundingClientRect()
+      const coords = getEventCoordinates(e)
       setDragStart({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
+        x: coords.x - rect.left,
+        y: coords.y - rect.top
       })
       setIsDragging(true)
     }
   }
 
-  // Handle dragging
+  // Handle dragging (mouse or touch)
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMove = (e) => {
       if (isDragging && windowRef.current) {
+        // Prevent default to avoid scrolling on touch devices
+        if (e.type === 'touchmove') {
+          e.preventDefault()
+        }
+        
         const windowRect = windowRef.current.getBoundingClientRect()
         const windowWidth = windowRect.width
         const windowHeight = windowRect.height
         
+        const coords = getEventCoordinates(e)
+        
         // Calculate desired position (viewport coordinates since window is position: fixed)
-        let newX = e.clientX - dragStart.x
-        let newY = e.clientY - dragStart.y
+        let newX = coords.x - dragStart.x
+        let newY = coords.y - dragStart.y
         
         // Constrain to viewport bounds
         newX = Math.max(0, Math.min(newX, window.innerWidth - windowWidth))
@@ -230,18 +259,25 @@ export const useWindowPosition = ({
       }
     }
 
-    const handleMouseUp = () => {
+    const handleEnd = () => {
       setIsDragging(false)
     }
 
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('mouseup', handleMouseUp)
+      // Add both mouse and touch event listeners
+      document.addEventListener('mousemove', handleMove)
+      document.addEventListener('mouseup', handleEnd)
+      document.addEventListener('touchmove', handleMove, { passive: false })
+      document.addEventListener('touchend', handleEnd)
+      document.addEventListener('touchcancel', handleEnd)
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
+      document.removeEventListener('mousemove', handleMove)
+      document.removeEventListener('mouseup', handleEnd)
+      document.removeEventListener('touchmove', handleMove)
+      document.removeEventListener('touchend', handleEnd)
+      document.removeEventListener('touchcancel', handleEnd)
     }
   }, [isDragging, dragStart])
 
@@ -249,7 +285,7 @@ export const useWindowPosition = ({
     position,
     windowSize,
     isDragging,
-    handleMouseDown,
+    handleDragStart,
     shouldBeFullscreen: isMobile() && hasBeenMinimizedRef.current && !isAnswered
   }
 }
