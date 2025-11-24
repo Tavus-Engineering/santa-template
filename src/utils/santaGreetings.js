@@ -415,7 +415,6 @@ const LANGUAGE_MAP = {
   'id': 'indonesian',
   'tl': 'filipino',
   'fil': 'filipino',
-  'cmn': 'mandarin',
   'ja': 'japanese',
   'uk': 'ukrainian',
   'el': 'greek',
@@ -440,17 +439,6 @@ const LANGUAGE_MAP = {
   'hu': 'hungarian',
   'vi': 'vietnamese',
   'no': 'norwegian',
-  // Additional language codes (will default to English if not in SANTA_GREETINGS)
-  'bn': 'english', // Bengali - not in greetings, defaults to English
-  'th': 'english', // Thai - not in greetings, defaults to English
-  'he': 'english', // Hebrew - not in greetings, defaults to English
-  'ka': 'english', // Georgian - not in greetings, defaults to English
-  'te': 'english', // Telugu - not in greetings, defaults to English
-  'gu': 'english', // Gujarati - not in greetings, defaults to English
-  'kn': 'english', // Kannada - not in greetings, defaults to English
-  'ml': 'english', // Malayalam - not in greetings, defaults to English
-  'mr': 'english', // Marathi - not in greetings, defaults to English
-  'pa': 'english', // Punjabi - not in greetings, defaults to English
 };
 
 export function getLanguageFromBrowser() {
