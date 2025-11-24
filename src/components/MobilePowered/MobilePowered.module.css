@@ -13,10 +13,20 @@
 }
 
 .mobilePoweredImage {
+  display: inline-block;
+  height: auto;
+  max-height: 30px;
+  width: auto;
+  text-decoration: none;
+  color: inherit;
+}
+
+.mobilePoweredImage img {
   height: auto;
   max-height: 30px;
   width: auto;
   image-rendering: auto;
+  display: block;
 }
 
 @media (max-width: 768px) {

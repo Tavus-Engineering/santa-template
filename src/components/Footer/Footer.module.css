@@ -46,10 +46,20 @@
 }
 
 .greyFooterLogo {
+  display: inline-block;
+  height: auto;
+  max-height: 40px;
+  width: auto;
+  text-decoration: none;
+  color: inherit;
+}
+
+.greyFooterLogo img {
   height: auto;
   max-height: 40px;
   width: auto;
   image-rendering: auto;
+  display: block;
 }
 
 .greyFooterCountdown {

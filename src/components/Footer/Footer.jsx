@@ -12,15 +12,17 @@ export const Footer = ({ selectedLanguage, onLanguageChange, isDisabled = false 
     <div className={styles.greyFooter}>
       <div className={styles.greyFooterContent}>
         <div className={styles.greyFooterLeft}>
-          <img 
-            src={ASSET_PATHS.images.footerLogo} 
-            alt="Powered by TAVUS" 
-            className={styles.greyFooterLogo} 
-            onClick={() => {
-              window.open('https://tavus.io', '_blank')
-            }}
-            style={{ cursor: 'pointer' }}
-          />
+          <a 
+            href="https://tavus.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.greyFooterLogo}
+          >
+            <img 
+              src={ASSET_PATHS.images.footerLogo} 
+              alt="Powered by TAVUS" 
+            />
+          </a>
           <div className={styles.footerLanguageSelector}>
             <LanguageSelector 
               selectedLanguage={selectedLanguage}
