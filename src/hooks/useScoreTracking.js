@@ -55,6 +55,16 @@ export function useScoreTracking(userId = DEFAULT_USER_ID, contextId = DEFAULT_C
 				);
 				const newPercentage = scoreToNicePercentage(result.totalScore);
 				setNicePercentage(newPercentage);
+				
+				// Debug logging (can be removed in production)
+				console.log('[ScoreTracking] Score updated:', {
+					scoreChange,
+					prevScore,
+					newTotalScore: result.totalScore,
+					sessionScore: result.sessionScore,
+					nicePercentage: newPercentage,
+				});
+				
 				return result.totalScore;
 			});
 		}

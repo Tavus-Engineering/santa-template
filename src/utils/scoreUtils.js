@@ -49,6 +49,16 @@ export function extractScoreTags(text) {
 
 	const scoreChange = plusPoints - minusPoints;
 
+	// Debug logging (can be removed in production)
+	if (scoreChange !== 0) {
+		console.log('[ScoreUtils] extractScoreTags:', {
+			text: text.substring(0, 100), // First 100 chars for debugging
+			plusPoints,
+			minusPoints,
+			scoreChange,
+		});
+	}
+
 	return scoreChange;
 }
 
