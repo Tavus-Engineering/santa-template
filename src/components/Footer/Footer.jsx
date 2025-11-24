@@ -4,7 +4,7 @@ import { ASSET_PATHS } from '../../utils/assetPaths'
 import { LanguageSelector } from '../LanguageSelector/LanguageSelector'
 import styles from './Footer.module.css'
 
-export const Footer = ({ selectedLanguage, onLanguageChange, isDisabled = false }) => {
+export const Footer = ({ selectedLanguage, onLanguageChange, isDisabled = false, hideLanguageSelector = false }) => {
   const timeUntilChristmas = useCountdown()
   const t = useTranslation(selectedLanguage)
 
@@ -21,13 +21,15 @@ export const Footer = ({ selectedLanguage, onLanguageChange, isDisabled = false 
             }}
             style={{ cursor: 'pointer' }}
           />
-          <div className={styles.footerLanguageSelector}>
-            <LanguageSelector 
-              selectedLanguage={selectedLanguage}
-              onLanguageChange={onLanguageChange}
-              disabled={isDisabled}
-            />
-          </div>
+          {!hideLanguageSelector && (
+            <div className={styles.footerLanguageSelector}>
+              <LanguageSelector 
+                selectedLanguage={selectedLanguage}
+                onLanguageChange={onLanguageChange}
+                disabled={isDisabled}
+              />
+            </div>
+          )}
         </div>
         <div className={styles.greyFooterCountdown}>
           <div className={styles.greyFooterCountdownTitle}>{t('christmasCountdown')}</div>

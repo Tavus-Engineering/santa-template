@@ -75,6 +75,7 @@ function App() {
         selectedLanguage={selectedLanguage}
         onLanguageChange={setSelectedLanguage}
         isDisabled={isHairCheckComplete && !isCallEnded}
+        hideLanguageSelector={isHairCheckComplete && !isCallEnded}
       />
       
       <MobileCountdown 
@@ -88,6 +89,7 @@ function App() {
         selectedLanguage={selectedLanguage}
         onLanguageChange={setSelectedLanguage}
         isDisabled={isHairCheckComplete && !isCallEnded}
+        hideLanguageSelector={isHairCheckComplete && !isCallEnded}
       />
 
       <MobilePowered isWindowOpen={hasBeenMinimizedRef.current && (!isMinimized || !isFlappyMinimized)} />
