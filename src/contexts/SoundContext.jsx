@@ -90,6 +90,13 @@ export const SoundProvider = ({ children }) => {
     }
   }
 
+  const muteMusic = () => {
+    if (backgroundMusicRef.current && !isMuted) {
+      backgroundMusicRef.current.muted = true
+      setIsMuted(true)
+    }
+  }
+
   const playButtonClick = () => {
     // Only play if not muted
     if (!isMuted && buttonClickSoundRef.current) {
@@ -145,7 +152,8 @@ export const SoundProvider = ({ children }) => {
   return (
     <SoundContext.Provider value={{ 
       isMuted, 
-      toggleMute, 
+      toggleMute,
+      muteMusic,
       playButtonClick,
       playCallEnd,
       playCallFailure,

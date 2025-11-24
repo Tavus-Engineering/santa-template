@@ -81,7 +81,7 @@ export const ConnectingScreen = ({ error, selectedLanguage = 'en' }) => {
       </video>
       <div className={styles.connectingScreenText}>
         {console.log('[ConnectingScreen] No conversationUrl, showing message:', error || 'loading')}
-        {getMessage()}
+        {t('connectingToNorthPole')}
       </div>
     </div>
   )

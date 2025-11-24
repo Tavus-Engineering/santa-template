@@ -337,6 +337,70 @@ export const SANTA_MESSAGES_5S = {
     "يجب أن أذهب الآن بسرعة، اعتن بنفسك!",
     "هو هو هو! يجب أن أكون في الطريق، حتى المرة القادمة!"
   ],
+  "indonesian": [
+    "Saya harus bergegas sekarang, jaga dirimu!",
+    "Ho ho ho! Saya harus dalam perjalanan, sampai jumpa lagi!"
+  ],
+  "filipino": [
+    "Kailangan kong umalis na ngayon, ingat ka!",
+    "Ho ho ho! Kailangan kong nasa daan na, hanggang sa susunod!"
+  ],
+  "ukrainian": [
+    "Мені потрібно зараз поспішити, бережи себе!",
+    "Хо хо хо! Я повинен бути в дорозі, до наступного разу!"
+  ],
+  "greek": [
+    "Πρέπει να φύγω τώρα, πρόσεχε τον εαυτό σου!",
+    "Χο χο χο! Πρέπει να είμαι στο δρόμο, μέχρι την επόμενη φορά!"
+  ],
+  "czech": [
+    "Musím teď spěchat, opatruj se!",
+    "Ho ho ho! Musím být na cestě, až příště!"
+  ],
+  "finnish": [
+    "Minun täytyy kiirehtiä nyt, pidä huolta itsestäsi!",
+    "Ho ho ho! Minun täytyy olla matkalla, ensi kertaan!"
+  ],
+  "romanian": [
+    "Trebuie să plec acum în grabă, ai grijă de tine!",
+    "Ho ho ho! Trebuie să fiu pe drum, până data viitoare!"
+  ],
+  "danish": [
+    "Jeg skal skynde mig nu, pas på dig selv!",
+    "Ho ho ho! Jeg skal være på vej, indtil næste gang!"
+  ],
+  "bulgarian": [
+    "Трябва да тръгна сега набързо, пази се!",
+    "Хо хо хо! Трябва да съм на път, до следващия път!"
+  ],
+  "malay": [
+    "Saya perlu bergegas sekarang, jaga diri anda!",
+    "Ho ho ho! Saya perlu berada di jalan, sehingga kali seterusnya!"
+  ],
+  "slovak": [
+    "Musím teraz ponáhľať, dávaj na seba pozor!",
+    "Ho ho ho! Musím byť na ceste, až nabudúce!"
+  ],
+  "croatian": [
+    "Moram sada požuriti, pazi na sebe!",
+    "Ho ho ho! Moram biti na putu, do sljedećeg puta!"
+  ],
+  "tamil": [
+    "நான் இப்போது அவசரமாக செல்ல வேண்டும், உங்களை கவனித்துக் கொள்ளுங்கள்!",
+    "ஹோ ஹோ ஹோ! நான் வழியில் இருக்க வேண்டும், அடுத்த முறை வரை!"
+  ],
+  "hungarian": [
+    "Most sietnem kell, vigyázz magadra!",
+    "Ho ho ho! Úton kell lennem, legközelebbig!"
+  ],
+  "vietnamese": [
+    "Tôi phải vội vàng đi ngay bây giờ, hãy chăm sóc bản thân!",
+    "Ho ho ho! Tôi phải lên đường, đến lần sau!"
+  ],
+  "norwegian": [
+    "Jeg må skynde meg nå, ta vare på deg selv!",
+    "Ho ho ho! Jeg må være på vei, til neste gang!"
+  ],
 };
 
 const LANGUAGE_MAP = {
