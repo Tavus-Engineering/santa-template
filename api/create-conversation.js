@@ -148,7 +148,24 @@ export default async function handler(req, res) {
       'pl': 'polish',
       'ru': 'russian',
       'sv': 'swedish',
-      'tr': 'turkish'
+      'tr': 'turkish',
+      'id': 'indonesian',
+      'fil': 'filipino',
+      'bg': 'bulgarian',
+      'ro': 'romanian',
+      'ar': 'arabic',
+      'cs': 'czech',
+      'el': 'greek',
+      'fi': 'finnish',
+      'hr': 'croatian',
+      'ms': 'malay',
+      'sk': 'slovak',
+      'da': 'danish',
+      'ta': 'tamil',
+      'uk': 'ukrainian',
+      'hu': 'hungarian',
+      'no': 'norwegian',
+      'vi': 'vietnamese'
     }
 
     // Prepare request body for Tavus API
