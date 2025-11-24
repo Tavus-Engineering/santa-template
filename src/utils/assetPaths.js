@@ -1,7 +1,8 @@
 // Centralized asset path constants
 export const ASSET_PATHS = {
   videos: {
-    background: '/Zu9p__MDRbBybE9UUmFKV_output.mp4',
+    background: '/wonderland.mp4',
+    backgroundMobile: '/mobileback.mp4',
     intro: '/veed2.mp4',
     loop: '/SANTA_CC_CUT_0011_FIRE_PLACE-ezgif.com-reverse-video (1).mp4',
     northPole: '/north pole.mp4'
@@ -19,12 +20,14 @@ export const ASSET_PATHS = {
     elfUp: '/elfup.png',
     elfDown: '/elfdown.png',
     phoneIcon: '/Frame 50.svg',
-    footerLogo: '/Frame 2147229103.png'
+    footerLogo: '/Frame 2147229103.png',
+    powered: '/powered.png'
   },
   icons: {
-    mic: '/icons/mic.png',
-    video: '/icons/video.png',
-    volume: '/icons/volume.svg',
+    mic: '/icons/mic.svg',
+    video: '/icons/video.svg',
+    volumeOn: '/icons/volume-on.svg',
+    volumeOff: '/icons/volume-off.svg',
     moodHappy: '/icons/mood-happy.svg',
     moodHappyFill: '/icons/solid-mood-happy.svg',
     moodNeutral: '/icons/mood-neutral.svg',

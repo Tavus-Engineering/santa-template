@@ -4,6 +4,7 @@ import {
 	getStoredScore,
 	updateScore,
 	scoreToNicePercentage,
+	stripScoreTags,
 } from '../utils/scoreUtils';
 
 const DEFAULT_USER_ID = 'user';
@@ -59,13 +60,7 @@ export function useScoreTracking(userId = DEFAULT_USER_ID, contextId = DEFAULT_C
 		}
 
 		// Return message with tags removed for display
-		return messageText
-			.replace(/<\+\+\+>/g, '')
-			.replace(/<--->/g, '')
-			.replace(/<\+\+>/g, '')
-			.replace(/<-->/g, '')
-			.replace(/<\+>/g, '')
-			.replace(/<->/g, '');
+		return stripScoreTags(messageText);
 	}, [userId, contextId]);
 
 	return {

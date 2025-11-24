@@ -10,6 +10,8 @@ import { Background } from './components/Background/Background'
 import { Header } from './components/Header/Header'
 import { HeroText } from './components/HeroText/HeroText'
 import { Footer } from './components/Footer/Footer'
+import { MobileCountdown } from './components/MobileCountdown/MobileCountdown'
+import { MobilePowered } from './components/MobilePowered/MobilePowered'
 import { WindowIcon } from './components/WindowIcon/WindowIcon'
 import { VideoCallWindow } from './components/VideoCallWindow/VideoCallWindow'
 import { FlappyWindow } from './components/FlappyWindow/FlappyWindow'
@@ -26,6 +28,7 @@ function App() {
   const [selectedLanguage, setSelectedLanguage] = useState('en')
   const windowRef = useRef(null)
   const flappyWindowRef = useRef(null)
+  const hasBeenMinimizedRef = useRef(false)
 
   // Only start conversation when user clicks "Answer His Call"
   const { conversationUrl, conversationId, error } = useTavusConversation(isAnswered, false, selectedLanguage, isHairCheckComplete)
@@ -33,6 +36,10 @@ function App() {
   const handleSantaIconClick = () => {
     if (isMinimized) {
       setIsFlappyMinimized(true)
+    }
+    // Track that window has been minimized (when closing)
+    if (!isMinimized) {
+      hasBeenMinimizedRef.current = true
     }
     setIsMinimized(!isMinimized)
   }
@@ -64,7 +71,16 @@ function App() {
     <div className="app">
       <Background />
       
-      <Header />
+      <Header 
+        selectedLanguage={selectedLanguage}
+        onLanguageChange={setSelectedLanguage}
+        isDisabled={isHairCheckComplete && !isCallEnded}
+      />
+      
+      <MobileCountdown 
+        selectedLanguage={selectedLanguage} 
+        isWindowOpen={hasBeenMinimizedRef.current && (!isMinimized || !isFlappyMinimized)}
+      />
       
       <HeroText selectedLanguage={selectedLanguage} />
 
@@ -73,6 +89,8 @@ function App() {
         onLanguageChange={setSelectedLanguage}
         isDisabled={isHairCheckComplete && !isCallEnded}
       />
+
+      <MobilePowered isWindowOpen={hasBeenMinimizedRef.current && (!isMinimized || !isFlappyMinimized)} />
 
       <main className="main-content">
         <WindowIcon

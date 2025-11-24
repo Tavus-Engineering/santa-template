@@ -21,29 +21,31 @@ export const Footer = ({ selectedLanguage, onLanguageChange, isDisabled = false 
             }}
             style={{ cursor: 'pointer' }}
           />
-          <LanguageSelector 
-            selectedLanguage={selectedLanguage}
-            onLanguageChange={onLanguageChange}
-            disabled={isDisabled}
-          />
+          <div className={styles.footerLanguageSelector}>
+            <LanguageSelector 
+              selectedLanguage={selectedLanguage}
+              onLanguageChange={onLanguageChange}
+              disabled={isDisabled}
+            />
+          </div>
         </div>
         <div className={styles.greyFooterCountdown}>
           <div className={styles.greyFooterCountdownTitle}>{t('christmasCountdown')}</div>
           <div className={styles.countdownItems}>
             <div className={styles.countdownItem}>
-              <span className={styles.countdownNumber}>{timeUntilChristmas.days}</span>
+              <span className={styles.countdownNumber}>{timeUntilChristmas.days.toString().padStart(2, '0')}</span>
               <span className={styles.countdownLabel}>{t('days')}</span>
             </div>
             <div className={styles.countdownItem}>
-              <span className={styles.countdownNumber}>{timeUntilChristmas.hours}</span>
+              <span className={styles.countdownNumber}>{timeUntilChristmas.hours.toString().padStart(2, '0')}</span>
               <span className={styles.countdownLabel}>{t('hrs')}</span>
             </div>
             <div className={styles.countdownItem}>
-              <span className={styles.countdownNumber}>{timeUntilChristmas.minutes}</span>
+              <span className={styles.countdownNumber}>{timeUntilChristmas.minutes.toString().padStart(2, '0')}</span>
               <span className={styles.countdownLabel}>{t('min')}</span>
             </div>
             <div className={styles.countdownItem}>
-              <span className={styles.countdownNumber}>{timeUntilChristmas.seconds}</span>
+              <span className={styles.countdownNumber}>{timeUntilChristmas.seconds.toString().padStart(2, '0')}</span>
               <span className={styles.countdownLabel}>{t('sec')}</span>
             </div>
           </div>

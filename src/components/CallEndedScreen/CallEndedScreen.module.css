@@ -61,7 +61,7 @@
 }
 
 .callEndedSubtext {
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: clamp(18px, 2.5vw, 24px);
   color: #EAE5DE;
   line-height: 1.7;
@@ -81,7 +81,7 @@
   background: #00E676;
   color: #fff;
   border: 2px solid #00E676;
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 16px;
   font-weight: 600;
   text-transform: uppercase;

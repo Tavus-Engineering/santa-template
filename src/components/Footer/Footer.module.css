@@ -7,7 +7,7 @@
   background: #EAE5DE;
   z-index: 1000;
   box-sizing: border-box;
-  border-top: 1px solid #4A4A4A;
+  border-top: 1px solid #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29,6 +29,20 @@
   gap: 20px;
   position: relative;
   z-index: 1001;
+}
+
+.footerLanguageSelector {
+  display: block;
+}
+
+@media (min-width: 769px) {
+  .greyFooterLeft {
+    gap: 0;
+  }
+  
+  .footerLanguageSelector {
+    display: none;
+  }
 }
 
 .greyFooterLogo {
@@ -54,7 +68,7 @@
 }
 
 .greyFooterCountdownTitle {
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 12px;
   font-weight: 600;
   color: #2C2C2C;
@@ -78,19 +92,23 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  min-width: 32px;
 }
 
 .countdownNumber {
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 18px;
   font-weight: 600;
   color: #2C2C2C;
   line-height: 1;
   letter-spacing: 0.15em;
+  display: inline-block;
+  min-width: 24px;
+  text-align: center;
 }
 
 .countdownLabel {
-  font-family: 'FK Raster Grotesk Compact', sans-serif;
+  font-family: 'Berkeley Mono', sans-serif;
   font-size: 9px;
   font-weight: 500;
   color: #2C2C2C;
@@ -101,49 +119,7 @@
 
 @media (max-width: 768px) {
   .greyFooter {
-    padding: 0 20px;
-    padding-bottom: calc(20px + env(safe-area-inset-bottom));
-    height: auto;
-    min-height: 60px;
-    bottom: 0;
-  }
-
-  .greyFooterContent {
-    flex-direction: column;
-    gap: 12px;
-    padding: 12px 0;
-  }
-
-  .greyFooterLeft {
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-  }
-
-  .greyFooterLogo {
-    max-height: 30px;
-  }
-
-  .greyFooterCountdown {
-    padding: 6px 12px;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .greyFooterCountdownTitle {
-    font-size: 10px;
-  }
-
-  .countdownItems {
-    gap: 10px;
-  }
-
-  .countdownNumber {
-    font-size: 14px;
-  }
-
-  .countdownLabel {
-    font-size: 7px;
+    display: none;
   }
 }
 

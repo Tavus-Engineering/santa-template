@@ -1,0 +1,43 @@
+.musicToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #EAE5DE;
+  border: 0.5px solid #4A4A4A;
+  border-radius: 0;
+  cursor: pointer;
+  font-family: 'Berkeley Mono', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #2C2C2C;
+  transition: all 0.2s ease;
+  pointer-events: auto;
+  width: auto;
+  min-width: auto;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1002;
+}
+
+.musicToggle:hover {
+  background: #D9D3CC;
+  border-color: #5A5A5A;
+}
+
+.musicIcon {
+  font-size: 16px;
+  color: #2C2C2C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .musicToggle {
+    display: none;
+  }
+}
+

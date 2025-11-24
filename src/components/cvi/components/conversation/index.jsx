@@ -312,17 +312,17 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	}, [countdown, sendAppMessage, conversationId, meetingState, selectedLanguage, isReplicaPresent]);
 
 	// Listen for Tavus CVI events to process AI responses
-	// The processMessage function extracts score tags (<+> and <->) from text
+	// The processMessage function extracts score tags (<scoring:+> and <scoring:->) from text
 	// and updates the score accordingly. It also returns the text with tags removed.
 	//
 	// ⚠️ CRITICAL: The LLM must be configured with a system prompt that instructs it to include
-	// <+> and <-> tags in its responses. This is typically configured in:
+	// <scoring:+> and <scoring:-> tags in its responses. This is typically configured in:
 	// - Tavus dashboard/persona settings
 	// - Backend conversation creation
 	// - Coda database if using that for persona config
 	//
 	// The system prompt should include instructions like:
-	// "Add <+> for positive behavior, <-> for negative behavior. Tags are invisible to users."
+	// "Add <scoring:+> for positive behavior, <scoring:-> for negative behavior. Tags are invisible to users."
 	useEffect(() => {
 		if (!onAppMessage) {
 			return;
@@ -465,7 +465,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	const formatDuration = (seconds) => {
 		const mins = Math.floor(seconds / 60);
 		const secs = seconds % 60;
-		return `${mins}:${secs.toString().padStart(2, '0')}`;
+		return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 	};
 
 	// Record usage when call ends
@@ -776,7 +776,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 						>
 							<span className={styles.controlIcon}>
 								<img 
-									src="/icons/mic.png" 
+									src="/icons/mic.svg" 
 									alt="Microphone" 
 									className={styles.iconImage}
 								/>
@@ -824,7 +824,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 						>
 							<span className={styles.controlIcon}>
 								<img 
-									src="/icons/video.png" 
+									src="/icons/video.svg" 
 									alt="Video" 
 									className={styles.iconImage}
 								/>

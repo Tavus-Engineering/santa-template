@@ -10,41 +10,63 @@ const MAX_SESSION_SCORE = 4;
 /**
  * Extracts score tags from text and calculates the score change
  * @param {string} text - Text to scan for tags
- * @returns {number} - Score change (positive for <+>, <++>, <+++>, negative for <->, <-->, <--->)
+ * @returns {number} - Score change (positive for <score:+> or <scoring:+> through 7 signs, negative for <score:-> or <scoring:-> through 7 signs)
  */
 export function extractScoreTags(text) {
 	if (!text || typeof text !== 'string') return 0;
 
-	// Match in order from most to least specific to avoid double counting
-	// Match <+++> first (3 points), then <++> (2 points), then <+> (1 point)
-	const triplePlusMatches = text.match(/<\+\+\+>/g);
-	// Remove triple matches first, then match double
-	const textWithoutTriplePlus = text.replace(/<\+\+\+>/g, '');
-	const doublePlusMatches = textWithoutTriplePlus.match(/<\+\+>/g);
-	// Remove double matches, then match single
-	const textWithoutDoublePlus = textWithoutTriplePlus.replace(/<\+\+>/g, '');
-	const singlePlusMatches = textWithoutDoublePlus.match(/<\+>/g);
+	let plusPoints = 0;
+	let minusPoints = 0;
+	let workingText = text;
 
-	// Match <---> first (3 points), then <--> (2 points), then <-> (1 point)
-	// Need to match in order and exclude longer matches from shorter ones
-	const tripleMinusMatches = text.match(/<--->/g);
-	// Remove triple matches first, then match double
-	const textWithoutTriple = text.replace(/<--->/g, '');
-	const doubleMinusMatches = textWithoutTriple.match(/<-->/g);
-	// Remove double matches, then match single
-	const textWithoutDouble = textWithoutTriple.replace(/<-->/g, '');
-	const singleMinusMatches = textWithoutDouble.match(/<->/g);
+	// Match in order from most to least specific (7 down to 1) to avoid double counting
+	// Support both <score:-> and <scoring:-> patterns
+	// Process positive signs (7 down to 1)
+	for (let i = 7; i >= 1; i--) {
+		const signs = '+'.repeat(i);
+		// Match both <score:+++> and <scoring:+++>
+		const pattern1 = `<score:${signs}>`;
+		const pattern2 = `<scoring:${signs}>`;
+		const regex1 = new RegExp(pattern1.replace(/\+/g, '\\+'), 'g');
+		const regex2 = new RegExp(pattern2.replace(/\+/g, '\\+'), 'g');
+		
+		const matches1 = workingText.match(regex1);
+		const matches2 = workingText.match(regex2);
+		
+		if (matches1) {
+			plusPoints += matches1.length * i;
+			workingText = workingText.replace(regex1, '');
+		}
+		if (matches2) {
+			plusPoints += matches2.length * i;
+			workingText = workingText.replace(regex2, '');
+		}
+	}
 
-	// Calculate points: each match counts as its point value
-	const plusPoints = 
-		(triplePlusMatches ? triplePlusMatches.length * 3 : 0) +
-		(doublePlusMatches ? doublePlusMatches.length * 2 : 0) +
-		(singlePlusMatches ? singlePlusMatches.length * 1 : 0);
+	// Reset working text for negative signs
+	workingText = text;
 
-	const minusPoints = 
-		(tripleMinusMatches ? tripleMinusMatches.length * 3 : 0) +
-		(doubleMinusMatches ? doubleMinusMatches.length * 2 : 0) +
-		(singleMinusMatches ? singleMinusMatches.length * 1 : 0);
+	// Process negative signs (7 down to 1)
+	for (let i = 7; i >= 1; i--) {
+		const signs = '-'.repeat(i);
+		// Match both <score:--> and <scoring:-->
+		const pattern1 = `<score:${signs}>`;
+		const pattern2 = `<scoring:${signs}>`;
+		const regex1 = new RegExp(pattern1.replace(/-/g, '\\-'), 'g');
+		const regex2 = new RegExp(pattern2.replace(/-/g, '\\-'), 'g');
+		
+		const matches1 = workingText.match(regex1);
+		const matches2 = workingText.match(regex2);
+		
+		if (matches1) {
+			minusPoints += matches1.length * i;
+			workingText = workingText.replace(regex1, '');
+		}
+		if (matches2) {
+			minusPoints += matches2.length * i;
+			workingText = workingText.replace(regex2, '');
+		}
+	}
 
 	const scoreChange = plusPoints - minusPoints;
 
@@ -58,14 +80,32 @@ export function extractScoreTags(text) {
  */
 export function stripScoreTags(text) {
 	if (!text || typeof text !== 'string') return text;
-	// Remove in order from most to least specific to avoid partial matches
-	return text
-		.replace(/<\+\+\+>/g, '')
-		.replace(/<--->/g, '')
-		.replace(/<\+\+>/g, '')
-		.replace(/<-->/g, '')
-		.replace(/<\+>/g, '')
-		.replace(/<->/g, '');
+	
+	// Remove in order from most to least specific (7 down to 1) to avoid partial matches
+	// Support both <score:-> and <scoring:-> patterns
+	let cleanedText = text;
+	
+	// Remove positive signs (7 down to 1)
+	for (let i = 7; i >= 1; i--) {
+		const signs = '+'.repeat(i);
+		const pattern1 = `<score:${signs}>`;
+		const pattern2 = `<scoring:${signs}>`;
+		const regex1 = new RegExp(pattern1.replace(/\+/g, '\\+'), 'g');
+		const regex2 = new RegExp(pattern2.replace(/\+/g, '\\+'), 'g');
+		cleanedText = cleanedText.replace(regex1, '').replace(regex2, '');
+	}
+	
+	// Remove negative signs (7 down to 1)
+	for (let i = 7; i >= 1; i--) {
+		const signs = '-'.repeat(i);
+		const pattern1 = `<score:${signs}>`;
+		const pattern2 = `<scoring:${signs}>`;
+		const regex1 = new RegExp(pattern1.replace(/-/g, '\\-'), 'g');
+		const regex2 = new RegExp(pattern2.replace(/-/g, '\\-'), 'g');
+		cleanedText = cleanedText.replace(regex1, '').replace(regex2, '');
+	}
+	
+	return cleanedText;
 }
 
 /**

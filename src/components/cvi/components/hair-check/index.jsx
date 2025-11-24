@@ -18,9 +18,9 @@ const JoinBtn = ({ onClick, disabled, className, loading, loadingText, t }) => {
 		>
 			<div className={styles.buttonJoinInner}>
 				<img
-					src="/icons/video.png"
+					src="/icons/video.svg"
 					alt="Video"
-					style={{ width: '16px', height: '16px', objectFit: 'contain', flexShrink: 0 }}
+					style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }}
 				/>
 				<span>{loading ? (loadingText || t('dialingToNorthPole')) : t('joinVideoCall')}</span>
 			</div>
@@ -143,7 +143,7 @@ export const HairCheck = memo(({ isJoinBtnLoading = false, onJoin, onCancel, con
 						>
 							<span className={styles.controlIcon}>
 								<img 
-									src="/icons/mic.png" 
+									src="/icons/mic.svg" 
 									alt="Microphone" 
 									className={styles.iconImage}
 								/>
@@ -190,7 +190,7 @@ export const HairCheck = memo(({ isJoinBtnLoading = false, onJoin, onCancel, con
 						>
 							<span className={styles.controlIcon}>
 								<img 
-									src="/icons/video.png" 
+									src="/icons/video.svg" 
 									alt="Video" 
 									className={styles.iconImage}
 								/>

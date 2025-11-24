@@ -41,7 +41,7 @@ const LANGUAGE_OPTIONS = [
 export const LanguageSelector = ({ selectedLanguage, onLanguageChange, disabled = false }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [dropdownPosition, setDropdownPosition] = useState({ left: 0, bottom: 0 })
+  const [dropdownPosition, setDropdownPosition] = useState({ left: 0, top: 0, width: 0 })
   const dropdownRef = useRef(null)
   const buttonRef = useRef(null)
   const searchInputRef = useRef(null)
@@ -81,7 +81,8 @@ export const LanguageSelector = ({ selectedLanguage, onLanguageChange, disabled 
         const rect = buttonRef.current.getBoundingClientRect()
         setDropdownPosition({
           left: rect.left,
-          bottom: window.innerHeight - rect.top + 4
+          top: rect.bottom + 4,
+          width: rect.width
         })
       }
     }
@@ -136,7 +137,8 @@ export const LanguageSelector = ({ selectedLanguage, onLanguageChange, disabled 
           className={styles.languageDropdown}
           style={{
             left: `${dropdownPosition.left}px`,
-            bottom: `${dropdownPosition.bottom}px`
+            top: `${dropdownPosition.top}px`,
+            width: `${dropdownPosition.width}px`
           }}
         >
           <div className={styles.searchContainer}>

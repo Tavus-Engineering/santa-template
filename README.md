@@ -420,7 +420,7 @@ export const useNewHook = (dependency) => {
 - Follow the retro/pixelated aesthetic:
   - `image-rendering: pixelated`
   - No border-radius (use `border-radius: 0`)
-  - Use the project fonts: 'FK Raster Grotesk Compact' and 'Perfectly Nineties'
+  - Use the project fonts: 'Berkeley Mono' and 'Perfectly Nineties'
 
 ### Common Tasks
 

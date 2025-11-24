@@ -1,0 +1,77 @@
+.mobileCountdown {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  display: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px 16px 20px;
+  pointer-events: none;
+  gap: 20px;
+}
+
+.mobileCountdownTitle {
+  font-family: 'Berkeley Mono', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: #2C2C2C;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+}
+
+.mobileCountdownItems {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+}
+
+.mobileCountdownItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 28px;
+}
+
+.mobileCountdownNumber {
+  font-family: 'Berkeley Mono', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2C2C2C;
+  line-height: 1;
+  letter-spacing: 0.15em;
+  display: inline-block;
+  min-width: 20px;
+  text-align: center;
+}
+
+.mobileCountdownLabel {
+  font-family: 'Berkeley Mono', sans-serif;
+  font-size: 8px;
+  font-weight: 500;
+  color: #2C2C2C;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .mobileCountdown {
+    display: flex;
+    top: 30px;
+    padding-top: calc(30px + env(safe-area-inset-top));
+  }
+
+  .mobileCountdown.hidden {
+    display: none;
+  }
+}
+

@@ -143,43 +143,6 @@
   font-display: swap;
 }
 
-/* FK Raster Grotesk Compact */
-@font-face {
-  font-family: 'FK Raster Grotesk Compact';
-  src: url('/Fonts/fk_raster_grotesk_compact/woff2/FKRasterGroteskCompact-Blended.woff2') format('woff2'),
-       url('/Fonts/fk_raster_grotesk_compact/woff/FKRasterGroteskCompact-Blended.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'FK Raster Grotesk Compact';
-  src: url('/Fonts/fk_raster_grotesk_compact/woff2/FKRasterGroteskCompact-Rounded.woff2') format('woff2'),
-       url('/Fonts/fk_raster_grotesk_compact/woff/FKRasterGroteskCompact-Rounded.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'FK Raster Grotesk Compact';
-  src: url('/Fonts/fk_raster_grotesk_compact/woff2/FKRasterGroteskCompact-Sharp.woff2') format('woff2'),
-       url('/Fonts/fk_raster_grotesk_compact/woff/FKRasterGroteskCompact-Sharp.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'FK Raster Grotesk Compact';
-  src: url('/Fonts/fk_raster_grotesk_compact/woff2/FKRasterGroteskCompact-Smooth.woff2') format('woff2'),
-       url('/Fonts/fk_raster_grotesk_compact/woff/FKRasterGroteskCompact-Smooth.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* Perfectly Nineties */
 @font-face {
   font-family: 'Perfectly Nineties';
@@ -471,7 +434,7 @@
 }
 
 :root {
-  font-family: 'FK Raster Grotesk Compact', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Berkeley Mono', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 

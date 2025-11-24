@@ -32,7 +32,7 @@ export const VideoCallWindow = ({
   const [isReplicaReady, setIsReplicaReady] = useState(false)
   const t = useTranslation(selectedLanguage)
 
-  const { position, windowSize, isDragging, handleMouseDown } = useWindowPosition({
+  const { position, windowSize, isDragging, handleMouseDown, shouldBeFullscreen } = useWindowPosition({
     isLoading,
     isMinimized,
     isAnswered,
@@ -198,12 +198,12 @@ export const VideoCallWindow = ({
   return (
     <div 
       ref={windowRef}
-      className={`${styles.videoCallWindow} ${isAnswered ? styles.windowAnswered : ''}`}
+      className={`${styles.videoCallWindow} ${isAnswered ? styles.windowAnswered : ''} ${shouldBeFullscreen ? styles.mobileFullscreen : ''}`}
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
         transform: 'none',
-        ...(windowSize && !isAnswered && window.innerWidth <= 768 ? {
+        ...(windowSize && !isAnswered && !shouldBeFullscreen && window.innerWidth <= 768 ? {
           width: `${windowSize.width}px`,
           height: `${windowSize.height}px`
         } : {})
