@@ -14,18 +14,13 @@
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Perfectly Nineties', serif;
-  font-size: clamp(32px, 5vw, 64px);
-  font-weight: 400;
+  font-size: 5vw;
   color: #fff;
   z-index: 5;
   opacity: 0;
   pointer-events: none;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
   text-align: center;
-  width: fit-content;
-  max-width: calc(100% - 8px);
-  overflow-wrap: break-word;
-  word-break: break-word;
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {
@@ -35,32 +30,15 @@
 }
 
 .callingText.animate {
-  animation: fadeInThenPulse 0.8s ease-in-out forwards, pulse 2s ease-in-out 0.8s infinite;
+  animation: fadeIn 0.8s ease-in-out forwards;
 }
 
-@keyframes fadeInThenPulse {
+@keyframes fadeIn {
   0% {
     opacity: 0;
-    transform: translateX(-50%) translateY(-10px) scale(0.95);
   }
   100% {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
-}
-
-@keyframes pulse {
-  0% {
-    transform: translateX(-50%) scale(1);
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-  }
-  50% {
-    transform: translateX(-50%) scale(1.03);
-    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
-  }
-  100% {
-    transform: translateX(-50%) scale(1);
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
   }
 }
 
