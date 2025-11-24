@@ -24,6 +24,7 @@ function App() {
   // Check for URL parameter to simulate call ended screen
   const urlParams = new URLSearchParams(window.location.search)
   const simulateCallEnded = urlParams.get('simulateCallEnded') === 'true'
+  const isWafGeoblocked = urlParams.get('comingsoon') === 'true'
   
   const [isMinimized, setIsMinimized] = useState(false)
   const [isFlappyMinimized, setIsFlappyMinimized] = useState(true)
@@ -67,8 +68,8 @@ function App() {
     return <LoadingScreen selectedLanguage={selectedLanguage} />
   }
 
-  // Show geoblocked screen if user is geoblocked
-  if (isGeoblocked || error === 'geoblocked') {
+  // Show geoblocked screen if user is geoblocked (from WAF redirect or API check)
+  if (isWafGeoblocked || isGeoblocked || error === 'geoblocked') {
     return <GeoblockedScreen selectedLanguage={selectedLanguage} />
   }
 
