@@ -46,7 +46,7 @@ export const useWindowPosition = ({
         if (!hasBeenMinimizedRef.current) {
           // First open: position window below hero text, extending to cover icons but stopping above powered image
         setTimeout(() => {
-          const heroText = document.querySelector('.hero-text')
+          const heroText = document.querySelector('[data-hero-text="true"]')
           const windowWidth = window.innerWidth * 0.9
             const result = calculateMobilePosition(heroText, null, windowWidth, null)
             if (result) {
@@ -94,7 +94,7 @@ export const useWindowPosition = ({
         if (!hasBeenMinimizedRef.current) {
           // First open: position window below hero text, extending to cover icons but stopping above powered image
         setTimeout(() => {
-          const heroText = document.querySelector('.hero-text')
+          const heroText = document.querySelector('[data-hero-text="true"]')
           const windowWidth = window.innerWidth * 0.9
             const result = calculateMobilePosition(heroText, null, windowWidth, null)
             if (result) {
@@ -132,7 +132,7 @@ export const useWindowPosition = ({
         // Only use custom positioning on first open (before any minimize)
         if (!hasBeenMinimizedRef.current) {
         setTimeout(() => {
-          const heroText = document.querySelector('.hero-text')
+          const heroText = document.querySelector('[data-hero-text="true"]')
             const windowWidth = window.innerWidth * 0.9
             const result = calculateMobilePosition(heroText, null, windowWidth, null)
             if (result) {
@@ -166,7 +166,7 @@ export const useWindowPosition = ({
         // Only use custom positioning on first open (before any minimize)
         if (!hasBeenMinimizedRef.current) {
         setTimeout(() => {
-          const heroText = document.querySelector('.hero-text')
+          const heroText = document.querySelector('[data-hero-text="true"]')
             const windowWidth = window.innerWidth * 0.9
             const result = calculateMobilePosition(heroText, null, windowWidth, null)
             if (result) {

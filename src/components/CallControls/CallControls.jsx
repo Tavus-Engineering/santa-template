@@ -11,6 +11,15 @@ export const CallControls = ({ onAnswer, showIntroVideo, onIntroVideoEnd, select
   const t = useTranslation(selectedLanguage)
   const { playButtonClick } = useSound()
 
+  // Start animation immediately or when video starts
+  useEffect(() => {
+    // Trigger animation after a short delay to ensure element is rendered
+    const timer = setTimeout(() => {
+      setVideoStarted(true)
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [])
+
   // Ensure intro video properly handles ended event
   useEffect(() => {
     if (introVideoRef.current && showIntroVideo) {
@@ -52,10 +61,6 @@ export const CallControls = ({ onAnswer, showIntroVideo, onIntroVideoEnd, select
           loop
           muted
           playsInline
-          onPlay={() => {
-            console.log('Loop video started playing')
-            setVideoStarted(true)
-          }}
         >
           <source src={ASSET_PATHS.videos.loop} type="video/mp4" />
         </video>

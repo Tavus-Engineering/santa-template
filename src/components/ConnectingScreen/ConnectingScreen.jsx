@@ -48,7 +48,7 @@ export const ConnectingScreen = ({ error, selectedLanguage = 'en' }) => {
           </figure>
         </div>
       )
-    }
+  }
   }
 
   // Otherwise show the connecting screen with video

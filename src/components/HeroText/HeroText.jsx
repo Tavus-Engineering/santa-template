@@ -46,7 +46,7 @@ export const HeroText = ({ selectedLanguage = 'en' }) => {
   }, [selectedLanguage, heroText])
   
   return (
-    <div ref={containerRef} className={styles.heroText}>
+    <div ref={containerRef} className={styles.heroText} data-hero-text="true">
       <span ref={textRef} className={styles.heroTextMeet}>
         {heroText}
       </span>

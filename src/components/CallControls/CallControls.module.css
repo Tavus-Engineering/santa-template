@@ -14,31 +14,46 @@
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Perfectly Nineties', serif;
-  font-size: 5vw;
+  font-size: clamp(24px, 5vw, 48px);
   color: #fff;
   z-index: 5;
   opacity: 0;
   pointer-events: none;
   text-align: center;
   white-space: nowrap;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 @media (max-width: 768px) {
   .callingText {
     bottom: calc(100px + env(safe-area-inset-bottom));
+    font-size: clamp(32px, 8vw, 56px);
   }
 }
 
 .callingText.animate {
-  animation: fadeIn 0.8s ease-in-out forwards;
+  animation: fadeInPulse 1s ease-in-out forwards, pulse 2s ease-in-out 1s infinite;
 }
 
-@keyframes fadeIn {
+@keyframes fadeInPulse {
   0% {
     opacity: 0;
+    transform: translateX(-50%) scale(0.9);
   }
   100% {
     opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateX(-50%) scale(1.03);
   }
 }
 
