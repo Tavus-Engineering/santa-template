@@ -24,9 +24,10 @@ export const ASSET_PATHS = {
     powered: '/powered.png'
   },
   icons: {
-    mic: '/icons/mic.png',
-    video: '/icons/video.png',
-    volume: '/icons/volume.svg',
+    mic: '/icons/mic.svg',
+    video: '/icons/video.svg',
+    volumeOn: '/icons/volume-on.svg',
+    volumeOff: '/icons/volume-off.svg',
     moodHappy: '/icons/mood-happy.svg',
     moodHappyFill: '/icons/solid-mood-happy.svg',
     moodNeutral: '/icons/mood-neutral.svg',

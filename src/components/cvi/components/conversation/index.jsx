@@ -776,7 +776,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 						>
 							<span className={styles.controlIcon}>
 								<img 
-									src="/icons/mic.png" 
+									src="/icons/mic.svg" 
 									alt="Microphone" 
 									className={styles.iconImage}
 								/>
@@ -824,7 +824,7 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 						>
 							<span className={styles.controlIcon}>
 								<img 
-									src="/icons/video.png" 
+									src="/icons/video.svg" 
 									alt="Video" 
 									className={styles.iconImage}
 								/>
