@@ -30,6 +30,12 @@
   word-break: break-word;
 }
 
+@media (max-width: 768px) {
+  .callingText {
+    bottom: calc(100px + env(safe-area-inset-bottom));
+  }
+}
+
 .callingText.animate {
   animation: fadeInThenPulse 0.8s ease-in-out forwards, pulse 2s ease-in-out 0.8s infinite;
 }
@@ -71,6 +77,12 @@
   pointer-events: auto;
   margin: 0;
   padding: 0;
+}
+
+@media (max-width: 768px) {
+  .callControls {
+    bottom: calc(20px + env(safe-area-inset-bottom));
+  }
 }
 
 .unifiedButton {

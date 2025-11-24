@@ -28,6 +28,7 @@ function App() {
   const [selectedLanguage, setSelectedLanguage] = useState('en')
   const windowRef = useRef(null)
   const flappyWindowRef = useRef(null)
+  const hasBeenMinimizedRef = useRef(false)
 
   // Only start conversation when user clicks "Answer His Call"
   const { conversationUrl, conversationId, error } = useTavusConversation(isAnswered, false, selectedLanguage, isHairCheckComplete)
@@ -35,6 +36,10 @@ function App() {
   const handleSantaIconClick = () => {
     if (isMinimized) {
       setIsFlappyMinimized(true)
+    }
+    // Track that window has been minimized (when closing)
+    if (!isMinimized) {
+      hasBeenMinimizedRef.current = true
     }
     setIsMinimized(!isMinimized)
   }
@@ -70,7 +75,7 @@ function App() {
       
       <MobileCountdown 
         selectedLanguage={selectedLanguage} 
-        isWindowOpen={!isMinimized || !isFlappyMinimized}
+        isWindowOpen={hasBeenMinimizedRef.current && (!isMinimized || !isFlappyMinimized)}
       />
       
       <HeroText selectedLanguage={selectedLanguage} />
@@ -81,7 +86,7 @@ function App() {
         isDisabled={isHairCheckComplete && !isCallEnded}
       />
 
-      <MobilePowered isWindowOpen={!isMinimized || !isFlappyMinimized} />
+      <MobilePowered isWindowOpen={hasBeenMinimizedRef.current && (!isMinimized || !isFlappyMinimized)} />
 
       <main className="main-content">
         <WindowIcon
