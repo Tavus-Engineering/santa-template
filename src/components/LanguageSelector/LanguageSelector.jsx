@@ -19,6 +19,23 @@ const LANGUAGE_OPTIONS = [
   { code: 'ru', name: 'Russian' },
   { code: 'sv', name: 'Swedish' },
   { code: 'tr', name: 'Turkish' },
+  { code: 'id', name: 'Indonesian' },
+  { code: 'fil', name: 'Filipino' },
+  { code: 'bg', name: 'Bulgarian' },
+  { code: 'ro', name: 'Romanian' },
+  { code: 'ar', name: 'Arabic' },
+  { code: 'cs', name: 'Czech' },
+  { code: 'el', name: 'Greek' },
+  { code: 'fi', name: 'Finnish' },
+  { code: 'hr', name: 'Croatian' },
+  { code: 'ms', name: 'Malay' },
+  { code: 'sk', name: 'Slovak' },
+  { code: 'da', name: 'Danish' },
+  { code: 'ta', name: 'Tamil' },
+  { code: 'uk', name: 'Ukrainian' },
+  { code: 'hu', name: 'Hungarian' },
+  { code: 'no', name: 'Norwegian' },
+  { code: 'vi', name: 'Vietnamese' },
 ]
 
 export const LanguageSelector = ({ selectedLanguage, onLanguageChange, disabled = false }) => {
