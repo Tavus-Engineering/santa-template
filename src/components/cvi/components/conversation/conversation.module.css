@@ -90,7 +90,7 @@
 
 @media (max-width: 768px) {
 	.footer {
-		bottom: 10px;
+		bottom: calc(10px + env(safe-area-inset-bottom) + 60px);
 		width: calc(100% - 20px);
 		padding: 0;
 		min-width: unset;
@@ -106,8 +106,15 @@
 	
 	.footerControlsBottom {
 		padding: 10px 12px;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		border-top: 1px solid #4A4A4A;
+		gap: 8px;
+	}
+	
+	.footerControlsBottom :global(.container) {
+		flex: 1;
+		min-width: 0;
+		max-width: none;
 	}
 	
 	

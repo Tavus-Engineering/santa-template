@@ -265,6 +265,18 @@
   min-height: 0;
 }
 
+@media (max-width: 768px) {
+  .haircheckContainer :global(.haircheckSidebarContent) {
+    padding: 20px 20px calc(20px + env(safe-area-inset-bottom) + 80px) 20px !important;
+    justify-content: flex-start !important;
+  }
+  
+  .haircheckContainer :global(.haircheckSidebarContent > button) {
+    margin-top: auto;
+    margin-bottom: 0;
+  }
+}
+
 .haircheckContainer :global(.haircheckContent) {
   width: 100%;
   align-items: flex-start;
@@ -443,11 +455,14 @@
   .mobileFullscreen .videoFeed:has(.answeredScreen),
   .mobileFullscreen .videoFeed:has(.haircheckContainer),
   .mobileFullscreen .videoFeed:has(.conversationContainer) {
-    height: calc(100vh - 40px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    height: calc(100vh - 40px) !important;
     background: transparent !important;
     box-shadow: 
       inset 0 0 0 5px #EAE5DE,
       inset 0 0 0 6px #000 !important;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 60px) !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
   }
 }
 

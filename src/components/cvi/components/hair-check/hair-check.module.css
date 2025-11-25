@@ -68,7 +68,7 @@
     .sidebar {
       border-left: none;
       border-top: 1px solid var(--color-border);
-      padding: 1.5rem 1.25rem;
+      padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom) + 80px);
     }
   }
 }
