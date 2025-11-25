@@ -32,7 +32,7 @@ const FlappySantaDesktop = ({ selectedLanguage = 'en' }) => {
   
   // Desktop-specific physics and game parameters - balanced for desktop gameplay
   const gravity = 0.08 // Reduced gravity for slower fall on desktop
-  const jumpStrength = -5.625
+  const jumpStrength = -2.8125
   const pipeSpeed = 2.5 // Balanced speed for desktop (slower than mobile)
   const baseGap = 200 // Balanced gap size for desktop
   const pipeWidth = 80

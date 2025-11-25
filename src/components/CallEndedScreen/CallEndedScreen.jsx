@@ -24,7 +24,7 @@ export const CallEndedScreen = ({ onContinue, selectedLanguage = 'en' }) => {
             <img src={ASSET_PATHS.icons.xIcon} alt="Share to X" />
           </a>
           <a 
-            href={`https://www.linkedin.com/feed/?shareActive&mini=true&text=${encodeURIComponent('Don\'t sit on his lap, have a chat. Talk with AI Santa today:\n\nhttps://santa.tavus.io')}`}
+            href={`https://www.linkedin.com/feed/?shareActive&mini=true&text=${encodeURIComponent('I just met (AI) Santa for real at https://santa.tavus.io/')}`}
             target="_blank"
             rel="noopener noreferrer"
           >
