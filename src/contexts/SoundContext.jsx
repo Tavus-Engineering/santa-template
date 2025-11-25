@@ -77,16 +77,19 @@ export const SoundProvider = ({ children }) => {
 
   const toggleMute = () => {
     if (backgroundMusicRef.current) {
-      const newMutedState = !isMuted
-      backgroundMusicRef.current.muted = newMutedState
-      setIsMuted(newMutedState)
-      
-      // If unmuting, ensure audio is playing
-      if (!newMutedState) {
-        backgroundMusicRef.current.play().catch(error => {
-          console.log('Background music play failed:', error)
-        })
-      }
+      setIsMuted(prevMuted => {
+        const newMutedState = !prevMuted
+        backgroundMusicRef.current.muted = newMutedState
+        
+        // If unmuting, ensure audio is playing
+        if (!newMutedState) {
+          backgroundMusicRef.current.play().catch(error => {
+            console.log('Background music play failed:', error)
+          })
+        }
+        
+        return newMutedState
+      })
     }
   }
 
@@ -98,8 +101,8 @@ export const SoundProvider = ({ children }) => {
   }
 
   const playButtonClick = () => {
-    // Always play button click sound for feedback (regardless of mute state)
-    if (buttonClickSoundRef.current) {
+    // Only play if not muted
+    if (!isMuted && buttonClickSoundRef.current) {
       // Reset to start and play
       buttonClickSoundRef.current.currentTime = 0
       buttonClickSoundRef.current.play().catch(error => {

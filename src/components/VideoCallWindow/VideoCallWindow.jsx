@@ -33,7 +33,7 @@ export const VideoCallWindow = ({
   const [isReplicaReady, setIsReplicaReady] = useState(false)
   const hasEndedOnExitRef = useRef(false)
   const t = useTranslation(selectedLanguage)
-  const { playButtonClick, muteMusic } = useSound()
+  const { playButtonClick } = useSound()
 
   const { position, windowSize, isDragging, handleDragStart, shouldBeFullscreen } = useWindowPosition({
     isLoading,
@@ -66,12 +66,6 @@ export const VideoCallWindow = ({
     setIsHairCheckComplete(true)
   }
 
-  // Mute music when hair check screen is reached (if it was on)
-  useEffect(() => {
-    if (isAnswered) {
-      muteMusic()
-    }
-  }, [isAnswered, muteMusic])
 
   const handleCallEndedContinue = () => {
     setIsCallEnded(false)

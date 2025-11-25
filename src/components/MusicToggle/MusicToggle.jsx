@@ -5,7 +5,9 @@ import styles from './MusicToggle.module.css'
 export const MusicToggle = () => {
   const { isMuted, toggleMute, playButtonClick } = useSound()
 
-  const handleToggle = () => {
+  const handleToggle = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
     playButtonClick() // Play click sound before toggling
     toggleMute()
   }
@@ -14,6 +16,7 @@ export const MusicToggle = () => {
     <button
       className={styles.musicToggle}
       onClick={handleToggle}
+      onMouseDown={(e) => e.stopPropagation()}
       type="button"
     >
       <img 

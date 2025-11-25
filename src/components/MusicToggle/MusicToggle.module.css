@@ -13,12 +13,12 @@
   font-weight: 500;
   color: #2C2C2C;
   transition: all 0.2s ease;
-  pointer-events: auto;
+  pointer-events: auto !important;
   width: auto;
   min-width: auto;
   box-sizing: border-box;
   position: relative;
-  z-index: 1002;
+  z-index: 1005 !important;
 }
 
 .musicToggle:hover {

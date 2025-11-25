@@ -1,11 +1,16 @@
 .header {
   position: relative;
-  z-index: 5;
+  z-index: 1003;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 30px 40px;
   background: transparent;
+  pointer-events: none;
+}
+
+.header > * {
+  pointer-events: auto;
 }
 
 .headerLeft {
@@ -18,6 +23,9 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  position: relative;
+  z-index: 1004;
+  pointer-events: auto;
 }
 
 @media (max-width: 768px) {
