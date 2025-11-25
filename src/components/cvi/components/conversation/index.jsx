@@ -138,10 +138,10 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 	const videoDropdownRef = useRef(null);
 	const scoreContextSentRef = useRef(false);
 	const echo5sSentRef = useRef(false);
-	const timeCheck60sSentRef = useRef(false);
+	const timeCheck45sSentRef = useRef(false);
 	const echo5sIndexRef = useRef(0);
 	const isReplicaSpeakingRef = useRef(false);
-	const timeCheck60sPendingRef = useRef(false);
+	const timeCheck45sPendingRef = useRef(false);
 	const callStartTimeRef = useRef(null);
 	const usageRecordedRef = useRef(false);
 	const hasJoinedRef = useRef(false);
@@ -228,8 +228,8 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 		if (meetingState === 'joined-meeting' && isReplicaPresent) {
 			// Reset echo message flags when joining
 			echo5sSentRef.current = false;
-			timeCheck60sSentRef.current = false;
-			timeCheck60sPendingRef.current = false;
+			timeCheck45sSentRef.current = false;
+			timeCheck45sPendingRef.current = false;
 			echo5sIndexRef.current = 0;
 			// Reset context flags when joining
 			scoreContextSentRef.current = false;
@@ -255,22 +255,22 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 		}
 	}, [countdown, meetingState, isReplicaPresent, handleEnd]);
 
-	// Send time check utterance event at 60 seconds (or when 60 seconds remain)
+	// Send time check utterance event at 45 seconds (or when 45 seconds remain)
 	useEffect(() => {
 		if (!sendAppMessage || !conversationId || meetingState !== 'joined-meeting' || !isReplicaPresent) {
 			return;
 		}
 
-		// Send time check utterance event at 60 seconds remaining
-		if (countdown === 60 && !timeCheck60sSentRef.current && !timeCheck60sPendingRef.current) {
+		// Send time check utterance event at 45 seconds remaining
+		if (countdown === 45 && !timeCheck45sSentRef.current && !timeCheck45sPendingRef.current) {
 			// Check if replica is currently speaking
 			if (isReplicaSpeakingRef.current) {
 				// Replica is speaking, wait until it finishes
-				timeCheck60sPendingRef.current = true;
-				console.log('[Conversation] Time check at 60 seconds - waiting for replica to finish speaking');
+				timeCheck45sPendingRef.current = true;
+				console.log('[Conversation] Time check at 45 seconds - waiting for replica to finish speaking');
 			} else {
 				// Replica is not speaking, send immediately
-				const timeCheckText = "<time_check> Do not respond to this message. Instead, take this as an indicator that we have 60 seconds left in this conversation and we should execute our end call process. Make a natural transition to end the call accounting for what the user is about to say next <time_check>";
+				const timeCheckText = "<time_check> Do not respond to this message. Instead, take this as an indicator that we have 45 seconds left in this conversation and we should execute our end call process. Make a natural transition to end the call accounting for what the user is about to say next <time_check>";
 				
 				sendAppMessage({
 					message_type: "conversation",
@@ -280,8 +280,8 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 						text: timeCheckText
 					}
 				});
-				timeCheck60sSentRef.current = true;
-				console.log('[Conversation] Time check utterance sent at 60 seconds');
+				timeCheck45sSentRef.current = true;
+				console.log('[Conversation] Time check utterance sent at 45 seconds');
 			}
 		}
 	}, [countdown, sendAppMessage, conversationId, meetingState, isReplicaPresent]);
@@ -344,9 +344,9 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 				isReplicaSpeakingRef.current = false;
 				console.log('[Conversation] Replica finished speaking');
 				
-				// If we were waiting to send the 60s time check, send it now
-				if (timeCheck60sPendingRef.current && !timeCheck60sSentRef.current && sendAppMessage && conversationId) {
-					const timeCheckText = "<time_check> Do not respond to this message. Instead, take this as an indicator that we have 60 seconds left in this conversation and we should execute our end call process. Make a natural transition to end the call accounting for what the user is about to say next <time_check>";
+				// If we were waiting to send the 45s time check, send it now
+				if (timeCheck45sPendingRef.current && !timeCheck45sSentRef.current && sendAppMessage && conversationId) {
+					const timeCheckText = "<time_check> Do not respond to this message. Instead, take this as an indicator that we have 30 seconds left in this conversation and we should execute our end call process. Make a natural transition to end the call accounting for what the user is about to say next <time_check>";
 					
 					sendAppMessage({
 						message_type: "conversation",
@@ -356,9 +356,9 @@ export const Conversation = React.memo(forwardRef(({ onLeave, conversationUrl, c
 							text: timeCheckText
 						}
 					});
-					timeCheck60sSentRef.current = true;
-					timeCheck60sPendingRef.current = false;
-					console.log('[Conversation] Time check utterance sent at 60 seconds (after replica finished speaking)');
+					timeCheck45sSentRef.current = true;
+					timeCheck45sPendingRef.current = false;
+					console.log('[Conversation] Time check utterance sent at 45 seconds (after replica finished speaking)');
 				}
 			}
 
