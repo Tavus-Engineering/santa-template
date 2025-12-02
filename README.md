@@ -4,6 +4,11 @@ Create your own AI Santa variation with Tavus! This is a fully functional, festi
 
 **By default, this template features Bad Santa** - but you can easily customize it to create a tropical Santa, a mall-cop Santa, a Santa who's clearly in witness protection... or something completely cursed.
 
+## 🎬 Try It Live
+
+- **Talk to Bad Santa**: [https://badsanta.tavuslabs.org/](https://badsanta.tavuslabs.org/)
+- **Talk to Regular AI Santa**: [https://santa.tavus.io/](https://santa.tavus.io/)
+
 ## 🚀 Quick Start
 
 **Before you start:** You'll need to create your own persona in Tavus - you cannot use the persona ID from this template. See step 4 for details!
@@ -175,49 +180,6 @@ You only need one environment variable to get started:
 
 - `TAVUS_API_KEY` - Your Tavus API key (get it from [platform.tavus.io](https://platform.tavus.io))
 
-### ⚠️ Important: Protecting Your API Keys
-
-**Never commit your `.env` file!** It's already in `.gitignore`, but here's how to verify it's safe before pushing:
-
-1. **Check if `.env` is tracked by git:**
-   ```bash
-   git ls-files | grep "\.env$"
-   ```
-   If this shows `.env`, run `git rm --cached .env` to untrack it.
-
-2. **Verify `.env` is ignored:**
-   ```bash
-   git check-ignore -v .env
-   ```
-   This should show that `.env` is in `.gitignore`.
-
-3. **Check what will be committed:**
-   ```bash
-   git status
-   ```
-   Make sure `.env` is NOT listed (`.env.example` is fine - that's a template).
-
-4. **Or use the verification script:**
-   ```bash
-   ./verify-env-safe.sh
-   ```
-
-**Note**: The `.env.example` file is a template and should be committed to help others set up the project.
-
-## 🎯 How It Works
-
-1. **User visits your site** → Sees the retro UI with countdown
-2. **User clicks "ANSWER HIS CALL"** → Camera/mic setup screen
-3. **Hair check completes** → Tavus conversation URL is generated
-4. **Video call begins** → User talks to your custom AI Santa
-5. **Call ends** → End screen with sharing options
-
-The app uses:
-- **Tavus** for AI video conversations
-- **Daily.co** for video infrastructure
-- **React + Vite** for the frontend
-- **Vercel** for serverless functions
-
 ## 🐛 Troubleshooting
 
 ### "Tavus API key not found"
@@ -348,7 +310,27 @@ Found a bug? Want to add a feature? Pull requests are welcome!
 
 ## 📝 License
 
-[Add your license here]
+MIT License
+
+Copyright (c) 2024 Tavus Engineering
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ---
 
